@@ -1,1 +1,95 @@
-/home/tom/Uni/Year-1/tomcmd.sty
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tomcmd}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage[normalem]{ulem}
+\usepackage{wrapfig}
+\usepackage{import}
+\usepackage{xifthen}
+\usepackage{pdfpages}
+\usepackage{transparent}
+\usepackage{mathtools}
+
+% Remove paragraph indentation & add space between paragraphs
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.5em}
+
+% Make blackboard-bold letters easier to type
+\newcommand{\bb}[1]{\mathbb{#1}}
+\newcommand{\R}{\bb{R}}
+\newcommand{\N}{\bb{N}}
+\newcommand{\E}{\bb{E}}
+
+% Common \text commands within math mode
+\newcommand{\Dom}{\text{Dom}}
+\newcommand{\Ran}{\text{Ran}}
+\newcommand{\LHS}{\text{LHS}}
+\newcommand{\RHS}{\text{RHS}}
+\newcommand{\feven}{f_\text{even}}
+\newcommand{\fodd}{f_\text{odd}}
+\newcommand{\sgn}{\text{sgn}}
+\newcommand{\rk}{\text{rk}}
+\newcommand{\im}{\text{im}}
+\newcommand{\diag}{\text{diag}}
+\newcommand{\cov}{\bb{C}\text{ov}}
+\newcommand{\var}{\bb{V}\text{ar}}
+ 
+% Derivative stuff
+\newcommand{\dydx}{\frac{dy}{dx}}
+\newcommand{\dfdx}{\frac{df}{dx}}
+\newcommand{\dxdt}{\frac{dx}{dt}}
+\newcommand{\dydt}{\frac{dy}{dt}}
+\newcommand{\dzdt}{\frac{dz}{dt}}
+\newcommand{\ddx}{\frac{d}{dx}}
+\newcommand{\ddt}{\frac{d}{dt}}
+\newcommand{\pfpx}{\frac{\partial f}{\partial x}}
+\newcommand{\pfpy}{\frac{\partial f}{\partial y}}
+\newcommand{\pfpu}{\frac{\partial f}{\partial u}}
+\newcommand{\pfpv}{\frac{\partial f}{\partial v}}
+\newcommand{\pupx}{\frac{\partial u}{\partial x}}
+\newcommand{\pupy}{\frac{\partial u}{\partial y}}
+\newcommand{\pvpx}{\frac{\partial v}{\partial x}}
+\newcommand{\pvpy}{\frac{\partial v}{\partial y}}
+\newcommand{\pxpu}{\frac{\partial x}{\partial u}}
+\newcommand{\pypu}{\frac{\partial y}{\partial u}}
+\newcommand{\pxpv}{\frac{\partial x}{\partial v}}
+\newcommand{\pypv}{\frac{\partial y}{\partial v}}
+\newcommand{\pfpxy}{\frac{\partial^2 f}{\partial x \partial y}}
+\newcommand{\pfpz}{\frac{\partial f}{\partial z}}
+\newcommand{\pfpxyz}{\frac{\partial^3 f}{\partial x \partial y \partial z}}
+\newcommand{\ppx}{\frac{\partial}{\partial x}}
+\newcommand{\ppy}{\frac{\partial}{\partial y}}
+\newcommand{\ppz}{\frac{\partial}{\partial z}}
+\newcommand{\ppu}{\frac{\partial}{\partial u}}
+\newcommand{\ppv}{\frac{\partial}{\partial v}}
+\newcommand{\ppr}{\frac{\partial}{\partial r}}
+\newcommand{\ppth}{\frac{\partial}{\partial \theta}}
+
+% Set stuff
+\newcommand{\n}{\cap}
+ 
+% For all/exists with extra spacing
+\newcommand{\fa}{\,\forall\,}
+\newcommand{\ex}{\,\exists\,}
+
+% Stupidly long/difficult to remember commands
+\newcommand{\ep}{\varepsilon}
+\newcommand{\grad}{\nabla}
+
+% Used for inserting inkscape figures
+\newcommand{\incfig}[1]{%
+    \begin{figure}[ht]
+        \centering
+        \def\svgwidth{0.5\columnwidth}
+        \import{./figures/}{#1}
+    \end{figure}
+}
+
+% Proportionality
+\newcommand{\propind}[1]{%
+    \stackrel{({#1})}{\propto}
+}
