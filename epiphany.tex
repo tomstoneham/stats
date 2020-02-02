@@ -1,0 +1,1583 @@
+\documentclass[a4paper]{article}
+\usepackage{tomcmd}
+\usepackage{tcolorbox}
+
+\title{\vspace{-2cm}Statistics I Lecture Notes}
+\author{Notes by Prof. Matthias Troffaes \\ Typeset in \LaTeX \,by Tom Stoneham}
+\date{}
+
+\definecolor{flatblue}{RGB}{84, 109, 229}
+\definecolor{flatblack}{RGB}{48, 57, 82}
+\definecolor{flatred}{RGB}{225, 95, 65}
+\definecolor{flatgreen}{RGB}{33, 140, 116}
+
+\tcbuselibrary{breakable}
+
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.5}
+
+\newtcolorbox{definition}[1][]{
+    arc=0cm,
+    bottomrule at break=0pt,
+    breakable,
+    colback=white,
+    colframe=flatblack,
+    title=Definition: #1,
+    toprule at break=0pt
+}
+
+\newtcolorbox{relq}{
+    arc=0cm,
+    bottomrule at break=0pt,
+    breakable,
+    colback=white,
+    colframe=flatblue,
+    title=Related Questions,
+    toprule at break=0pt
+}
+
+\newtcolorbox{warn}{
+    arc=0cm,
+    bottomrule at break=0pt,
+    breakable,
+    colback=white,
+    colframe=flatred,
+    title=Warning,
+    toprule at break=0pt
+}
+
+\newtcolorbox{fread}{
+    arc=0cm,
+    bottomrule at break=0pt,
+    breakable,
+    colback=white,
+    colframe=flatgreen,
+    title=Further Reading,
+    toprule at break=0pt
+}
+
+\begin{document}
+
+    \maketitle
+
+    \tableofcontents
+
+    \newpage
+    \setcounter{section}{-1}
+    \section{Course Introduction}
+        This course is delivered by Matthias Troffaes
+        (\href{mailto:matthias.troffaes@durham.ac.uk}
+        {\underline{matthias.troffaes@durham.ac.uk}}). Office hours are Mondays,
+        from 08:40 - 10:40, in CM304.
+
+        Tutorials will occur once every two weeks, starting in week 12.
+
+        Problems classes occur once every two weeks in the Friday lecture spot,
+        starting in week 14.
+
+        Homework will be set every Friday, and is to be handed in to your tutor
+        by next Friday at 17:00.
+
+        We're working from a new course. Problem sheets and solutions are
+        available on DUO, as are the lecture notes Matthias is working from. Not
+        all past exam questions are going to be directly relevant to the course:
+        it's mostly the more advanced questions from the problem sheets we
+        should use for practice.
+
+        We will follow \textit{Probability \& Statistics}, 2012, 4ed, by DeGroot
+        and Schervish, for most lectures, referred to in these notes as [DS12].
+        This is available as an e-book
+        \href{http://library.dur.ac.uk/record=b2868012~S1}{\underline{on DUO}}.
+        For the first few lectures, we will follow \textit{Applied Statistics \&
+        Probability for Engineers}, 2003, 3ed, by Montgomery \& Runger, referred
+        to as [MR03]. While there is not an e-book freely available, there are a
+        number of copies available from the library. Furthermore, the library
+        have actually scanned the first two chapters of [MR03], and these are
+        available to read via DUO, under ``Library Resources''.
+
+        Throughout these notes, we will highlight certain information as
+        follows:
+
+        \begin{definition}[Introduction]
+            \textbf{Definitions} are in dark blue boxes, with the word being
+            defined highlighted in bold.
+        \end{definition}
+
+        \begin{relq}
+            References to related questions on the problem sheets are in light
+            blue.
+        \end{relq}
+
+        \begin{warn}
+            Any warnings/caveats related to a section's content are placed in
+            red.
+        \end{warn}
+
+        \begin{fread}
+            Further reading (from [DS12], [MR03]) will be placed in green.
+        \end{fread}
+
+    \newpage
+    \section{Simple Frequentist Estimation and Prediction}
+        \subsection{Statistical Modelling and Inference}
+            \begin{fread}
+                [MR03, section 7.1]
+
+                [DS12, section 7.1]
+            \end{fread}
+
+            Consider the following practical scientific questions:
+
+            \begin{itemize}
+                \item What will be the sea level rise in the next 50 years?
+                \item What's the effectiveness of a new cancer treatment?
+                \item What's the biological impact of introducing a non-native
+                    species to an environment?
+                \item How much energy will a new wind farm produce, if built in
+                    a certain location?
+                \item What is the distribution of dark matter in the universe?
+            \end{itemize}
+
+            What do these situations have in common?
+
+            \begin{definition}[Uncertainty{,} Data{,} and Models]
+                Each situation involves:
+
+                \begin{itemize}
+                    \item \textbf{Uncertainty}: There's no exact answer, due to
+                        a lack of knowledge, and due to randomness.
+                    \item \textbf{Data}: Empirical observations, expert
+                        knowledge
+                    \item \textbf{Model}: Some idea of how the world behaves,
+                        how data are correlated. May be thought of as a specific
+                        way of expressing the objective part of expert
+                        knowledge.
+                \end{itemize}
+            \end{definition}
+
+            We will use probability theory to tackle these types of question.
+
+            Probability theory involves a number of concepts we will make use
+            of.
+
+            \begin{definition}[Probability Theory Concepts]
+                The \textbf{possibility space}, notated $\Omega$, is the set of
+                all possible outcomes. This can be huge, for example, the set of
+                all possible distributions of dark matter; or smaller, like if
+                we were to represent sea level rise by a single number.
+
+                We don't normally specify possibility spaces directly, but
+                instead focus on \textbf{random variables}. A random variable is
+                a \textit{function} from $\Omega \mapsto \R$ (or $\R^k$). This
+                can be observed. Random variables will always be denoted by
+                capital letters: $X, Y, \Theta, ...$.
+
+                An actual observed value of a random variable will be denoted
+                with a lower-case letter: $x, y, \theta, ...$.
+
+                A \textbf{statistical model} consists of an identification of:
+
+                \begin{itemize}
+                    \item Relevant random variables (both observable and
+                        hypothetically observable) including the data.
+
+                        For example: the expansion coefficient of water, actual
+                        rise, global temperature.
+
+                    \item Parameters (both known and unknown). We may learn
+                        about them, but not observe them directly.
+
+                        For example: The likelihood of recovery following the
+                        use of a certain treatment.
+
+                    \item A joint probability distribution, through probability
+                        mass functions (pmfs) and probability density functions
+                        (pdfs), on \textit{all} random variables, and possibly
+                        on all unknown paramters.
+                \end{itemize}
+            \end{definition}
+
+            \begin{warn}
+                Random variables \textit{only} correspond to observable (or
+                \textit{hypothetically} observable) quantities.
+
+                We may treat parameters as random variables in a statistical
+                model.
+            \end{warn}
+
+            \begin{relq}
+                Exercises 1 and 2 on the problem sheet give you textual
+                descriptions of some scenarios, and ask you to identify the
+                statistical model.
+            \end{relq}
+
+            \begin{definition}[Statistical inference]
+                A \textbf{statistical inference} is a procedure which produces
+                a \textbf{probabilistic statement} about any part of a
+                statistical model.
+
+                A probabilistic statement is just the probability of an event,
+                a mean, a variance, etc; i.e: Anything involving a mathematical
+                statement of probability.
+            \end{definition}
+
+            \subsubsection{Example: Smartphone Batteries}
+                \textit{Consider a smartphone battery production line. Every
+                50th battery is destructively tested for ``quality''. Quality,
+                here, is just some proxy for the battery lifetime. We're given
+                the following data for the quality of the last 10 tested
+                batteries:}
+
+                \begin{center}
+                    \begin{tabular}{c | c c c c c c c c c c}
+                        Battery & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+                        \hline
+                        Quality & 90 & 86 & 82 & 77 & 94 & 90 & 87 & 90 & 86 &
+                            86
+                    \end{tabular}
+                \end{center}
+
+                \textit{A battery is deemed faulty if quality is less than 80.
+                Identify the relevant statistical model.}
+
+                We first need to identify the relevant random variables:
+
+                \begin{itemize}
+                    \item The quality of the tested batteries (the
+                        \textit{data}, known): $X_1, ..., X_n$
+                    \item The quality of the untested batteries (hypothetically
+                        observable, unknown): $X_{n+1}, X_{n+2}, ...$
+                \end{itemize}
+
+                $n = 10$ is the sample size.
+
+                We now need to assign some joint distribution. We might
+                conjecture the following model, for example:
+
+                The $X_i$ are identically distributed (come from the same
+                probability distribution), according to some probability density
+                function $f(\cdot | \theta)$, for example, the normal
+                distribution, with $\E(X_i | \theta) = \theta, \var(X_i |
+                \theta) = 5^2$. This is just an assumption which seems
+                reasonable when we look at the data. $\theta$ is an unknown
+                parameter representing the mean of $X_i$. $\Theta$ is a random
+                variable representing $\theta$.
+
+                Here, $\theta \in \R$, but in general, you can have $\theta \in
+                \R^k$ (i.e: multiple parameters).
+
+                \begin{warn}
+                    We must assume that $X_i$ are independent
+                    \textit{conditional on $\Theta$}.
+
+                    Why can't we assume unconditional independence? Let's assume
+                    for now that all variables are discrete, for simplicity.
+
+                    Say that I observe $X_1$ to learn about $X_2$. So we're
+                    trying to find:
+
+                    \[
+                        \bb{P}(X_2 = x_2 | X_1 = x_1) = \frac{\bb{P}(X_2 = x_2,
+                        X_1 = x_1)}{\bb{P}(X_1 = x_1)}
+                    \]
+
+                    If we assume the variables are unconditionally independent,
+                    we then have:
+
+                    \begin{align*}
+                        \bb{P}(X_2 = x_2 | X_1 = x_1) & =
+                            \frac{\bb{P}(X_2 = x_2)\bb{P}(X_1 = x_1)}
+                            {\bb{P}(X_1 = x_1)} \\
+                        & = \bb{P}(X_2 = x_2)
+                    \end{align*}
+
+                    So we've learned absolutely nothing about $X_2$!
+
+                    If, on the other hand, we assume conditional independence on
+                    $\Theta$, we have:
+
+                    \begin{align*}
+                        \bb{P}(X_2 = x_2 | X_1 = x_1) & = \sum_\theta \bb{P}(X_2
+                            = x_2 | X_1 = x_1, \Theta = \theta) \cdot
+                            \bb{P}(\Theta = \theta | X_1 = x_1) \\
+                        & = \sum_\theta \bb{P}(X_2 = x_2 | \Theta = \theta)
+                            \cdot \bb{P}(\Theta = \theta | X_1 = x_1) \\
+                        & = \sum_\theta \bb{P}(X_2 = x_2 | \Theta = \theta)
+                            \cdot \frac{\bb{P}(X_1 = x_1 | \Theta = \theta)
+                            \bb{P}(\Theta = \theta)}{\bb{P}(X_1 = x_1} \\
+                        & \neq \bb{P}(X_2 = x_2) \quad \textit{(generally)}
+                    \end{align*}
+
+                    So we can learn about $X_2$ given the value of $X_1$! This
+                    is actually the \textit{only} way to enable learning, by
+                    DeFinetti's representation theorem.
+                \end{warn}
+
+            \subsubsection{Estimation and Prediction}
+                Typically, we perform statistical inference about either unknown
+                parameters, such as $\Theta$, or about future observations, such
+                as $X_{n+1}$.
+
+                \begin{definition}[Estimation{,} Prediction]
+                    \textbf{Estimation} specifically refers to statistical
+                    inference about unknown parameters, which
+                    \textbf{prediction} refers to statistical inference about
+                    future observations.
+                \end{definition}
+
+        \subsection{Point Estimation}
+            \begin{fread}
+                [MR03, section 7.2]
+            \end{fread}
+
+            Let's return to the battery example. Consider the sample mean:
+
+            \[
+                \bar X_n := \frac{1}{n} \sum_{i=1}^n X_i
+            \]
+
+            This would be a good choice to estimate $\theta$, because:
+
+            \begin{align*}
+                \E(\bar X_n | \theta) & = \frac{1}{n} \sum_{i = 1}^n \E(X_i |
+                    \theta) \\
+                & = \frac{1}{n}n\theta \\
+                & = \theta
+            \end{align*}
+
+            We can also use the sample mean to estimate the variance:
+
+            \begin{align*}
+                \var(\bar X_n | \theta) & = \frac{1}{n^2} \sum_{i = 1}^n
+                    \var(X_i | \theta) \\
+                & = \frac{1}{n^2} n 5^2 \\
+                & = \frac{5^2}{n}
+            \end{align*}
+
+            Note that $\var(\bar X_n | \theta) \to 0$ as $n \to \infty$. So, we
+            might use $\bar X_n$ as an approximation for $\Theta$.
+
+            \begin{definition}[Statistic{,} Estimator{,} Point Estimate]
+                A \textbf{statistic} is a real-valued function of the data, for
+                example, $\bar X_n$.
+
+                An \textbf{estimator}, $\hat T$, is a statistic which is meant
+                to approximate some real-valued function, $t(\Theta)$, of the
+                parameters. Remember that the parameters are random variables,
+                so a function of a parameter is also a random variable. Usually,
+                $t(\Theta)$ is just the identity function. We write $\hat
+                \Theta$ for an estimator of $\Theta$.
+
+                A \textbf{point estimate}, $\hat t$ for $t(\Theta)$ is just a
+                specific realisation of an estimator $\hat T for t(\Theta)$
+                after observing the data (the actual value of $\hat T$). We
+                write $\hat \theta$ for a point-estimate of $\Theta$.
+            \end{definition}
+
+            In our battery example, $\hat \Theta = \bar X_{10}$ is an estimator
+            for $\Theta$. $\hat \theta = \frac{1}{10} (90 + 86 + ...) = 86.8$ is
+            a point estimate of $\Theta$.
+
+            \subsubsection{Properties of Estimators}
+                \begin{definition}[Bias{,} Errors]
+                    For any estimator $\hat T$ of $t(\Theta)$, we define:
+
+                    \begin{itemize}
+                        \item \textbf{Bias} $:= \E(\hat T | \theta) - t(\theta)$
+
+                            An estimator with zero bias $\fa \theta$ is called
+                            \textbf{unbiased}.
+
+                            We saw that, for the sample mean, the conditional
+                            expectation is equal to the value we want to
+                            estimate, so we would say this estimator is
+                            unbiased.
+
+                        \item \textbf{Standard error} $:= \sqrt{\var(\hat T |
+                            \theta)}$.
+
+                            We can think of this as how much an estimator will
+                            vary, its conditional standard deviation.
+
+                            We want for an estimator to have a low standard
+                            error.
+
+                        \item \textbf{Mean square error} $:= \E((\hat T -
+                            t(\theta)^2 | \theta)$
+
+                            This is what we (usually) \textit{really} want to
+                            minimise for a good estimator.
+                    \end{itemize}
+                \end{definition}
+
+                Normally, we want estimators with a low mean square error.
+
+            \subsubsection{Theorem: Relation of Mean Square Error, Standard
+            Error, and Bias}
+                \begin{align*}
+                    \text{mean square error} & = (\text{standard error})^2 +
+                        (\text{bias})^2 \\
+                    \E((\hat T - t(\theta))^2 | \theta) & = \var(\hat T |
+                        \theta) + (\E(\hat T | \theta) - t(\theta))^2
+                \end{align*}
+
+                \begin{relq}
+                    Exercise 3 involves proving this relation. The solution is
+                    on DUO if you really want to be sure about the proof.
+                \end{relq}
+
+                This theorem is important because, since we're trying to
+                minimise mean square error, we might actually prefer a biased
+                estimator, provided its standard error is lower.
+
+                \incfig{./12mse.pdf_tex}
+
+                In this case, for example, we might choose to use the clearly
+                biased estimator $\hat\Theta_2$, since its variance being so
+                low may lead to a lower mean square error than $\hat\Theta_1$.
+
+            \subsubsection{Theorem: Minimum Variance Unbiased Estimator}
+                Consider some sequence of random variables $X_1, X_2, ...$, with
+                $X_i | \theta \sim \mathcal{N}(\theta, \sigma^2)$ where the
+                $X_i$ are independent, identically distributed (IID) conditional
+                on $\Theta$ and $\sigma > 0$ is some known constant. Then,
+                $\bar X_n$ is the minimum variance unbiased estimator of
+                $\Theta$ (in essence: the sample mean is the best estimator we
+                can construct of $\Theta$).
+
+                \begin{relq}
+                    The proof of this theorem is not given, but a related
+                    (simpler) proof is required for exercises 3 to 7.
+                \end{relq}
+
+            \subsubsection{Bias and Error in the Battery Example}
+                In the battery example, we showed:
+
+                \[
+                    \E(\bar X_n | \theta) = \theta
+                \]
+                \[
+                    \var(\bar X_n | \theta) \frac{5^2}{n}
+                \]
+
+                So $\bar X_n$ is an unbiased estimator of $\Theta$.
+
+                $\bar X_n$ has standard error $\frac{5}{\sqrt{n}}$, so the mean
+                square error is $\frac{5^2}{n}$.
+
+        \subsection{Interval Estimation}
+            \begin{fread}
+                [MR03, section 8.1, 8.2.1]
+            \end{fread}
+
+            \subsubsection{Central Limit Theorem (CLT)}
+                This is a key result from probability theory.
+
+                Consider an infinite sequence of random variables, $X_1, X_2,
+                ...$. We will assume they are IID conditional on some random
+                variable $\Theta$.
+
+                We will define the following functions:
+
+                \[
+                    \mu(\theta) := \E(X_i | \theta)
+                \]
+                \[
+                    \sigma^2(\theta) := \var(X_i | \theta)
+                \]
+
+                Note that neither $\mu$ nor $\theta$ depend on $i$ due to the
+                IID assumption.
+
+                We will further define the following random variables:
+
+                \[
+                    \bar X_n := \frac{1}{n} \sum_{i=1}^n X_i
+                \]
+                \[
+                    Z_n := \frac{\bar X_n - \mu(\Theta)}{\sigma(\Theta) /
+                    \sqrt{n}} \quad \textit{(the standardised sample mean)}
+                \]
+
+                Then, $\fa z \in \R$, and all possible values of $\theta$, we
+                have:
+
+                \[
+                    \lim_{n \to \infty} \bb{P}(Z_n \leq z | \theta) = \Phi(z)
+                \]
+
+                where $\Phi$ is the cumulative distribution function of
+                $\mathcal{N}(0, 1)$.
+
+                The practical implication of this theorem is that, for large
+                $n$, we have the approximate result:
+
+                \[
+                    \bar X_n | \theta \sim \mathcal{N}\left(\mu(\theta),
+                    \frac{\sigma^2(\theta)}{n}\right)
+                \]
+
+                This approximation improves with a larger value of $n$, or as
+                the distribution of $X_i | \theta$ is closer to the normal.
+
+            \subsubsection{Application of CLT to Battery Example}
+                In our battery example, $\mu(\theta) = \theta, \sigma^2(\theta)
+                = 5^2$. So, $\bar X_{10} | \theta \sim \mathcal{N}\left(\theta,
+                \frac{5^2}{10}\right)$ approximately.
+
+                Can we exploit the CLT to make stronger probabilistic statements
+                about $\bar X_{10}$ And about $\Theta$?
+
+                Let's assume the conditions of the central limit theorem, with
+                $\mu(\theta) = \theta$ and $\sigma^2(\theta) = \sigma^2$ (i.e:
+                $\sigma^2$ is constant). Fix any $\alpha \in [0, 1]$ and let
+                $z_\frac{\alpha}{2} := \Phi^{-1}\left(1 -
+                \frac{\alpha}{2}\right)$
+
+                \incfig{./13clt.pdf_tex}
+
+                By the CLT:
+
+                \[
+                    \bb{P}(|Z_n| \leq z_{\alpha/2} | \theta) = 1 - \alpha
+                \]
+
+                By the definition of $Z_n$:
+
+                \[
+                    \bb{P}\left(\left|\frac{\bar X_n - \theta}{\sigma/\sqrt{n}
+                    }\right| \leq z_{\alpha/2} | \theta\right) = 1 - \alpha
+                \]
+
+                or equivalently:
+
+                \[
+                    \bb{P}\left(\bar X_n - z_{\alpha/2} \frac{\sigma}{\sqrt{n}}
+                    \leq \theta \leq \bar X_n + z_{\alpha/2}
+                    \frac{\sigma}{\sqrt{n}}|\theta\right) \leq 1 - \alpha
+                \]
+
+                This is a \textbf{confidence interval}, which we will define
+                after a caveat.
+
+                \begin{warn}
+                    Note that, here, the $\theta$ on the left is a constant as
+                    we're conditional on $\theta$, not a random variable, and
+                    $X_n$ is a random variable. So, if we have a value for the
+                    sample mean, we can construct the interval.
+
+                    This does \textit{not} say that the probability that
+                    $\theta$ lies in this specific interval is $1 - \alpha$.
+
+                    See section 1.3.3 for more information on the issues with
+                    thinking about confidence intervals like this.
+                \end{warn}
+
+                \begin{definition}[Confidence Interval]
+                    Assume $X_1, X_2, ..., X_n$ are IID, conditional on
+                    $\theta$, and assume that $\E(X_i | \theta) = \theta$,
+                    $\var(X_i | \theta) = \sigma^2 > 0$ is known, and constant
+                    independent of $\theta$. Then, $\fa \alpha \in [0, 1]$:
+
+                    \[
+                        \left[\bar x_n - z_{\alpha/2}\frac{\sigma}{\sqrt{n}},
+                        \bar x_n + z_{\alpha/2} \frac{\sigma}{\sqrt{n}}\right]
+                    \]
+
+                    is a $100 \cdot (1 - \alpha)\%$ \textbf{confidence interval}
+                    on $\Theta$.
+                \end{definition}
+
+                Common values for $z_{\alpha/2}$:
+
+                \begin{center}
+                    \begin{tabular}{c | c c c c c}
+                        $1 - \alpha$ & 0.80 & 0.90 & 0.95 & 0.98 & 0.99 \\
+                        \hline
+                        $z_{\alpha/2}$ & 1.28 & 1.64 & 1.96 & 2.33 & 2.58
+                    \end{tabular}
+                \end{center}
+
+                Now that we've defined a confidence interval, we should return
+                to the battery example. In this example, $n = 10, \bar x_{10} =
+                86.8, \sigma = 5$. For a 95\% confidence interval, we need to
+                calculate:
+
+                \[
+                    \bar x_n - 1.96 \frac{\sigma}{\sqrt{n}} = 83.7
+                \]
+                \[
+                    \bar x_n + 1.96 \frac{\sigma}{\sqrt{n}} = 89.9
+                \]
+
+                So the 95\% confidence interval for $\Theta$ is given by
+                $[83.6, 89.9]$.
+
+                \begin{relq}
+                    Problem 11 is highly relevant here, and is the closest so
+                    far to an actual exam question we would expect.
+
+                    Problem 9 also relies on confidence intervals and would be
+                    useful to attempt.
+                \end{relq}
+
+            \subsubsection{What Does a Confidence Interval Mean?}
+                In the battery example, does $[83.6, 89.9]$ really capture the
+                uncertainty of $\Theta$? In particular, does the event $\Theta
+                \in [83.7, 89.9]$ have probability 0.95? \textit{No}.
+
+                \[
+                    \bb{P}\left(\bar X_n - z_{\alpha/2} \frac{\sigma}{\sqrt{n}}
+                    \leq \theta \leq \bar X_n + z_{\alpha/2}
+                    \frac{\sigma}{\sqrt{n}}|\theta\right) \leq 1 - \alpha
+                \]
+
+                The probability in this equation, which we used to define a
+                confidence interval, is \textit{conditional on knowing $\Theta =
+                \theta$}. This isn't really what we want! We want it to be
+                conditional on $\bar X_n = \bar x_n$.
+
+                Instead, we \textit{only} know that $\fa \theta \in \R$, the
+                following event:
+
+                \[
+                    \theta \in \left[\bar X_n - 1.96 \frac{\sigma}{\sqrt{n}},
+                    \bar X_n + 1.96 \frac{\sigma}{\sqrt{n}}\right]
+                \]
+
+                has probability 0.95, conditional on $\Theta = \theta$.
+
+                We used the distribution of $\bar X_n$ conditional on $\Theta =
+                \theta$. We \textit{really} want the distribution of $\Theta$
+                conditional on $X_1 = x_1, ..., X_n = x_n$.
+
+                How can we do that? We'll use Bayes's theorem in a later section.
+                section. However, the computations are much harder, and we must
+                be able to treat $\Theta$ as a random variable, which we've
+                managed to avoid while thinking about confidence intervals.
+
+        \subsection{Interval Prediction}
+            \begin{fread}
+                [MR03, section 8.6]
+            \end{fread}
+
+            Let's think about the battery example again. What can we say about
+            the quality level of an untested battery, $X_{n+1}$? In other words,
+            having observed $X_1, ..., X_n$, what can we say about $X_{n+1}$?
+
+            In prediction, we can no longer rely on the central limit theorem as
+            we did in estimation, and must instead make another assumption about
+            the distribution of $X_n$. So, we will assume normality, again, IID
+            conditional on $\theta$:
+
+            \[
+                X_i | \theta \sim \mathcal{N}(\theta, \sigma^2)
+            \]
+
+            We then have:
+
+            \begin{align*}
+                \E(X_{n + 1} - \bar X_n | \theta) & = \E(X_{n + 1} | \theta) -
+                    \E(\bar X_n | \theta) \\
+                & = \theta - \theta \\
+                & = 0
+            \end{align*}
+            \begin{align*}
+                \var(X_{n + 1} - X_n | \theta) & = \var(X_{n + 1} | \theta) +
+                    \var(\bar X_n | \theta) & \textit{(by IID of $X_1, ...,
+                    X_{n+1}$)} \\
+                & = \sigma^2 + \frac{\sigma^2}{n} \\
+                & = \sigma^2 \left(1 + \frac{1}{n}\right)
+            \end{align*}
+
+            Note that $X_{n + 1}$ is distributed normally, and each $X_i$ is
+            normal, so the sample mean (a sum of normals) will also be normally
+            distributed, and the difference $X_{n + 1} - \bar X_n$ will also
+            have a normal distribution, as follows:
+
+            \[
+                X_{n + 1} - \bar X_n \sim \mathcal{N}\left(0, \sigma^2\left(1 +
+                \frac{1}{n}\right)\right)
+            \]
+
+            and consequently, via a similar calculation to how we analysed
+            confidence intervals, we have:
+
+            \[
+                \bb{P}\left(\bar X_n - z_{\alpha/2} \sigma\sqrt{1 + \frac{1}{n}}
+                \leq X_{n + 1} \leq \bar X_{n} + z_{\alpha/2} \sigma\sqrt{1 +
+                \frac{1}{n}} | \theta\right) = 1 - \alpha
+            \]
+
+            \subsubsection{Interval Prediction in the Battery Example}
+                We have $n = 10, \bar X_n = 86.8, \sigma = 5$, so we attain:
+
+                \[
+                    \bar x_n - 1.96 \sigma \sqrt{1 + \frac{1}{n}} = 76.5
+                \]
+                \[
+                    \bar x_n + 1.96 \sigma \sqrt{1 + \frac{1}{n}} = 97.1
+                \]
+
+                Recall that a battery was designated faulty if its quality was
+                less than 80, so the 95\% prediction interval includes values
+                less than this threshold. As such, we'd expect to see more
+                failures than we might be comfortable with, and we might wish to
+                redesign the battery production process.
+
+                The interval $[76.5, 97.1]$ is called a 95\% frequentist
+                prediction interval for $X_{n + 1}$.
+
+                \begin{definition}[Frequentist Prediction Interval]
+                    Assume $X_1, X_2, ..., X_n$ are IID, conditional on
+                    $\theta$, and assume that $X_i | \theta \sim \mathcal{N}
+                    (\theta, \sigma^2)$, where $\sigma$ is independent of
+                    $\theta$. Then, $\fa \alpha \in [0, 1]$:
+
+                    \[
+                        \left[\bar x_n - z_{\alpha/2}\sigma\sqrt{1 +
+                        \frac{1}{n}}, \bar x_n + z_{\alpha/2} \sigma\sqrt{1 +
+                        \frac{1}{n}}\right]
+                    \]
+
+                    is a $100 \cdot (1 - \alpha)\%$ \textbf{frequentist
+                    prediction interval} for $X_{n + 1}$.
+                \end{definition}
+
+                \begin{warn}
+                    Similar concerns to those involved in interval estimation
+                    apply: We used the distribution of $\bar X_n$ and
+                    $X_{n + 1}$ conditional on $\Theta = \theta$, but we
+                    actually want the distribution of $X_{n + 1}$ conditional on
+                    the data: $X_1 = x_1, ..., X_n = x_n$!
+                \end{warn}
+
+        \subsection{Parameters as Random Variables}
+            \begin{fread}
+                [DS12, section 7.1]
+            \end{fread}
+
+            For what we've done so far, we have avoided having to consider
+            $\Theta$ as a random variable, because we only used $\bb{P}(\cdot |
+            \theta)$, which we could consider as a distribution parametrised by
+            $\theta$. This may be notated (and in textbooks, commonly is
+            notated) as $\bb{P}_\theta(\cdot)$, or even just $\bb{P}(\cdot)$.
+
+            Doing this is appropriate if we only want to make probability
+            statements indexed by $\theta$. However, this is very limiting.
+
+            If we want to make more advanced probability statements, can we
+            treat $\Theta$ as a random variable? \textit{Yes}, provided that
+            $\Theta$ is (hypothetically) observable.
+
+            How can we make $\Theta$ observable? Consider, for instance, the
+            battery example, in which we observed the quality of batteries. By
+            the strong rule of large numbers, we have:
+
+            \[
+                \bb{P}\left(\Theta = \lim_{n \to \infty} \frac{1}{n}
+                \sum_{i=1}^n X_i\right) = 1
+            \]
+
+            This just means that as we take a very large value of $n$ for our
+            sample size, we expect the sample average to converge to $\Theta$.
+
+            So in this specific example, we can treat $\Theta$ as if it were the
+            observable quantity $\frac{1}{n} \sum\limits_{i=1}^n X_i$ for very
+            large $n$. This limit construction is possible for a very wide range
+            of practical statistical models (and, in particular, every model
+            that we'll encounter in first year).
+
+    \newpage
+    \section{Prior and Posterior Distributions}
+        \subsection{Prior Distributions}
+            \begin{fread}
+                [DS12, section 7.2]
+            \end{fread}
+
+            \begin{definition}[Prior PDF/PMF]
+                The \textbf{prior pdf or pmf} of a \textit{parameter} $\Theta$
+                is the pdf/pmf of $\Theta$ in advance of observing any data.
+                This can be used to quantify uncertainty in advance of observing
+                actual values. Mathematically, this is the
+                \textit{unconditional} marginal pdf/pmf of $\Theta$.
+
+                We don't have prior pdf/pmfs for all random variables, only
+                parameters.
+            \end{definition}
+
+            \subsubsection{Examples}
+
+                Let's go back to the battery example we looked at throughout
+                section 1, which we modelled as follows:
+
+                \[
+                    X_i | \theta \sim \mathcal{N}(\theta, 5^2)
+                \]
+
+                Prior to seeing the data, the manager supposes that the
+                parameter $\Theta$ is normally distributed, with mean 90 and
+                standard deviation 10. So we have:
+
+                \[
+                    \Theta \sim \mathcal{N}(90, 10^2), \implies f(\theta) =
+                    \frac{1}{10\sqrt{2\pi}} \exp{\left(-\frac{1}{2}\left(
+                    \frac{\theta - 90}{10}\right)^2\right)}
+                \]
+
+                This is the prior pdf for $\Theta$. \textit{It is unconditional
+                on any $X_i$.}
+
+                \begin{warn}
+                    The point of a prior pdf/pmf is that it is entirely
+                    unconditional on any $X_i$. You \textit{cannot} use any data
+                    parameters observed in a sample to determine the prior
+                    distribution.
+                \end{warn}
+
+                Let's move on to another example. Consider the outcome $X$ of a
+                coin toss. $X | \theta \sim \text{Bin}(\theta, 1)$. Let $X = 1$
+                represent heads, and $X = 0$ tails. We know that either:
+
+                \begin{itemize}
+                    \item The coin is fair: $\theta = \frac{1}{2}$,
+                    \item Or the coin has two heads: $\theta = 1$
+                \end{itemize}
+
+                Before we do any experimentation, we'll make a judgement about
+                whether we think the coin is fair or not. Let's suppose we know
+                the coin is fair with 80\% probability. We can express this
+                information using a probability mass function:
+
+                \[
+                    p(\theta) = \begin{cases}0.8, & \theta = \frac{1}{2} \\ 0.2,
+                    & \theta = 1\end{cases}
+                \]
+
+                This is a prior pmf on $\Theta$.
+
+                We now have two examples of prior pdf/pmfs, and the distribution
+                of data. Upon observing data, can we update our potential
+                pdf/pmfs to quantify the uncertainty in $\Theta$?
+
+        \subsection{Posterior Distribution and Likelihood}
+            \begin{definition}[Posterior Distribution]
+                The \textbf{posterior distribution} of a \textit{parameter}
+                $\Theta$ is the pdf or pmf of $\Theta$ after observing the data
+                (i.e: the \textit{conditional} pdf/pmf of $\Theta$) given $X_1 =
+                x_1, X_2 = x_2, ..., X_n = x_n$ (or any other observed random
+                variables comprising the data, although in this course the
+                observed random vars will always be in this form).
+            \end{definition}
+
+            Usually, the posterior distribution is calculated via Bayes's
+            theorem.
+
+            \subsubsection{Posterior Distribution for the Coin Toss Example}
+                Consider again the coin toss problem, and say that we observe
+                heads: $X = 1$. This provides some evidence that it might be
+                more likely that there are two heads.
+
+                Then, by Bayes's theorem, we have:
+
+                \begin{align*}
+                    \bb{P}\left(\Theta = \frac{1}{2} | X = 1\right) & =
+                        \frac{\bb{P}\left(X = 1 | \Theta = \frac{1}{2}\right)
+                        \bb{P}\left(\Theta = \frac{1}{2}\right)}{\bb{P}\left(X =
+                        1 | \Theta = \frac{1}{2}\right)\bb{P}\left(\Theta =
+                        \frac{1}{2} \right) + \bb{P}(X = 1 | \Theta = 1)
+                        \bb{P}(\Theta = 1)} \\
+                    & = \frac{\frac{1}{2} \cdot 0.8}{\frac{1}{2} \cdot 0.8 + 1
+                        \cdot 0.2} \\
+                    & = \frac{2}{3}
+                \end{align*}
+
+                We could also evaluate the probability is $1$ by performing the
+                same calculation to attain $\bb{P}(\theta = 1 | X = 1) =
+                \frac{1}{3}$. So the probability that the coin is biased has
+                increased, which makes intuitive sense.
+
+                It's also worth checking for yourself that $\bb{P}\left(\Theta =
+                \frac{1}{2} | x = 0\right) = 1$.
+
+            \subsubsection{Theorem: Posterior Distribution in General}
+                Assume $X_1, ..., X_n$ are IID, conditional on $\Theta$, with
+                pdf $f(x | \theta)$ and $\Theta$ has a prior pdf $f(\theta)$.
+                Then, $\Theta$ has posterior pdf given by:
+
+                \[
+                    f(\theta | x_1, ..., x_n) = \frac{f(\theta) \prod_{i=1}^n
+                    f(x_i | \theta)}{\int f(\theta ') \prod_{i=1}^n f(x_i |
+                    \theta') d\theta'}
+                \]
+
+                $\theta'$ is just a dummy variable over which we're integrating
+                here.
+
+                If we instead have a probability mass function for the data, the
+                formula is exactly the same, we just replace $f(x_i | \theta)$
+                with $p(x_i | \theta)$.
+
+                If the prior distribution is a pmf rather than a pdf, replace
+                $f(\theta)$ with $p(\theta)$, replace $f(\theta | x_1, ...,
+                x_n)$ with $p(\theta | x_1, ..., x_n)$, and note that the
+                integral $\int ... d\theta'$ becomes a sum $\sum_{\theta'}$.
+
+                \paragraph{Proof}
+                    Given a model as above with IID observations and a prior
+                    pdf, we can write down the full joint density for the model
+                    by the definition of conditional density:
+
+                    \begin{align*}
+                        f(x_1, ..., x_n, \theta) & = f(x_1, ..., x_n | \theta)
+                            \cdot f(\theta) \\
+                        & = f(\theta) \cdot \prod_{i=1}^n f(x_i | \theta) &
+                            \textit{(by IID of $X_i$ cond on $\Theta$)}
+                    \end{align*}
+
+                    Also, we have that the integral of this product over
+                    $\theta$ will give us the joint distribution of the $X_i$s,
+                    by the partition theorem:
+
+                    \begin{align*}
+                        f(x_1, ..., x_n) & = \int f(x_1, ..., x_n, \theta') d
+                            \theta' \\
+                        & = \int f(\theta') \cdot \prod_{i=1}^n f(x_i | \theta')
+                            d\theta'
+                    \end{align*}
+
+                    Finally, by the definition of conditional density, we have
+                    that:
+
+                    \begin{align*}
+                        f(\theta | x_1, ..., x_n) & = \frac{f(x_1, ..., x_n,
+                            \theta)}{f(x_1, ..., x_n)} \\
+                        & = \frac{f(\theta) \prod_{i=1}^n f(x_i | \theta)}{\int
+                            f(\theta ') \prod_{i=1}^n f(x_i | \theta') d\theta'}
+                            & \square
+                    \end{align*}
+
+                    The proof is very similar if we use pmfs instead.
+
+                \paragraph{Tackling the Integral}
+                    The tricky part of using this theorem to calculate posterior
+                    distributions tends to be evaluating the integral in the
+                    denominator. It is useful to note, however, that it only
+                    depends on the data $x_1, ..., x_n$, not the parameter
+                    $\theta$. It only acts to normalise the numerator (to make
+                    sure the integral of the density equals $1$).
+
+                    We can exploit this fact to write the following:
+
+                    \[
+                        f(\theta | x_1, ..., x_n) \propind{\theta}
+                        f(\theta) \cdot \prod_{i=1}^n f(x_i | \theta)
+                    \]
+
+                    \begin{warn}
+                        The symbol $\propind{\theta}$ means ``is equal to, up to
+                        a factor independent of $\theta$''. So the constant of
+                        proportionality (the \textit{normalisation constant})
+                        can depend on anything
+                        except $\theta$.
+                    \end{warn}
+
+                    \begin{definition}[Likeliness Function{,} Likelihood]
+                        We define the \textbf{likeliness function} or
+                        \textbf{likelihood} to be the conditional pdf/pmf of
+                        the data given the parameter:
+
+                        \[
+                            f(x_1, ..., x_n | \theta) = \prod_{i=1}^n f(x_i |
+                            \theta)
+                        \]
+
+                        where the $x_i$ are IID are conditional on $\Theta$.
+
+                        So, the posterior is proportional to the prior
+                        distribution, multiplied by the likelihood.
+                    \end{definition}
+
+            \subsubsection{Assorted Lemmata}
+                For working with normal priors and likelihoods, the following
+                results are very useful:
+
+                \paragraph{Lemma 2.2.3(a)}
+                    Let's say we have the following:
+
+                    \[
+                        f(y | z) \propind{y} \exp{-\frac{1}{2}\left(
+                        \frac{y - \mu(z)}{\sigma(z)}\right)^2}
+                    \]
+
+                    This is equivalent to saying:
+
+                    \[
+                        Y | z \sim \mathcal{N}(\mu(z), \sigma^2(z))
+                    \]
+
+                    The proof of this is trivial given the definition of the
+                    normal distribution.
+
+                \paragraph{Lemma 2.2.3(b)}
+                    Let's say we have a sum of the following form:
+
+                    \[
+                        \sum_{i=1}^n a_i (\theta - b_i)
+                    \]
+
+                    We then have the following:
+
+                    \begin{align*}
+                        \sum_{i=1}^n a_i (\theta - b_i)^2 & = \left(\sum_{i=1}^n
+                            a_i\right) \cdot \left(\theta - \frac{\sum_{i=1}^n
+                            a_ib_i}{\sum_{i=1}^n a_i}\right)^2 + ... &
+                            \textit{(all other terms are independent of
+                            $\theta$)}
+                    \end{align*}
+
+                \paragraph{Lemma 2.2.3(c)}
+                    If we just have two terms in the previous sum:
+
+                    \begin{align*}
+                        a_1(\theta - b_1)^2 + a_2(\theta - b_2)^2 & =
+                            (a_1 + a_2) \cdot \left(\theta - \frac{a_1b_1 +
+                            a_2b_2}{a_1 + a_2}\right)^2 + \left(\frac{1}{a_1} +
+                            \frac{1}{a_2}\right)^{-1} \cdot (b_1 - b_2)^2
+                    \end{align*}
+
+            \subsubsection{Posterior Distribution for the Battery Example}
+                We'll assume that the distribution of quality is normal, IID
+                conditional on $\theta$:
+
+                \[
+                    X_i | \theta \sim \mathcal{N}(\theta, 5^2)
+                \]
+
+                What is the likelihood (up to $\propind{\theta}$)?
+
+                \begin{align*}
+                    f(x_1, ..., x_n | \theta) & = \prod_{i=1}^n f(x_i | \theta)
+                        \\
+                    & = \prod_{i = 1}^n \frac{1}{5\sqrt{2\pi}} \exp{-\frac{1}{2}
+                        \left(\frac{x_i - \theta}{5}\right)^2} \\
+                    & \propind{\theta} \exp-\frac{1}{2}\sum_{i=1}^n \left(
+                        \frac{1}{5^2} (\theta - x_i)^2\right) \\
+                    & = \exp{-\frac{1}{2}\left(\frac{n}{5^2} \left(\theta -
+                        \frac{\sum_{i=1}^n \frac{x_i}{5^2}}{n/5^2}\right)^2 + F
+                        \right)}& \textit{(by lemma 2.2.3(b), $F$ independent of
+                        $\theta$)} \\
+                    & \propind{\theta} \exp{-\frac{n}{2 \cdot 5^2}\left(\theta -
+                        \bar x_n\right)^2} \\
+                    & = \exp{-\frac{10}{2 \cdot 5^2}(\theta - 86.8)^2}
+                \end{align*}
+
+                So, up to a factor independent of $\theta$, our likelihood only
+                depends on the data through $\bar x_n$. Consequently, so will
+                the posterior! Therefore, for this model, $\bar X_n$ is called
+                a \textbf{sufficient statistic}: We don't need to know the full
+                data to make inferences about $\Theta$, we only need to know the
+                sample mean $\bar X_n$!
+
+                In order to find a posterior distribution, we need to suppose a
+                prior distribution for $\Theta$, which is based on expert
+                knowledge. Let's say an expert gives the following prior
+                distribution:
+
+                \[
+                    \Theta \sim \mathcal{N}(90, 10^2)
+                \]
+
+                What is the posterior distribution for $\Theta$?
+
+                \begin{align*}
+                    f(\theta | x_1, ..., x_n) & \propind{\theta} f(\theta)
+                        f(x_1, ..., x_n | \theta) \\
+                    & \propind{\theta} \exp{-\frac{1}{2}\left(\frac{\theta - 90}
+                        {10}\right)^2} \cdot \exp{-\frac{n}{2 \cdot 5^2}(\theta
+                        - \bar x_n)^2} \\
+                    & = \exp{-\frac{1}{2}\left[\left(\frac{\theta - 90}{10}
+                        \right)^2 + \frac{n}{5^2}(\theta - \bar x_n)^2\right]}
+                        \\
+                    & = \exp{-\frac{1}{2}\left(\frac{1}{10^2} + \frac{n}{5^2}
+                        \right)\left(\theta - \frac{\frac{90}{10^2} + \frac{n
+                        \bar x_n}{5^2}}{\frac{1}{10^2} + \frac{n}{5^2}}\right)^2
+                        } \\
+                    & = \exp{-\frac{1}{2}\left(\frac{1}{1.56}\right)^2\left(
+                        \theta - \frac{\frac{90}{10^2} + \frac{n \bar x_n}{5^2}}
+                        {\frac{1}{10^2} + \frac{n}{5^2}}\right)^2} \\
+                    & = \exp{-\frac{1}{2}\left(\frac{1}{1.56}\right)^2\left(
+                        \theta - 86.9\right)^2} \\
+                \end{align*}
+                \[
+                    \implies \Theta | x_1, ..., x_n \sim \mathcal{N}(86.9,
+                    1.56^2)
+                \]
+
+                We can now construct genuinely useful probability intervals for
+                $\Theta$ conditional on the data!
+
+                \[
+                    \bb{P}(86.9 - 1.96 \cdot 1.56 \leq \Theta \leq 86.9 + 1.96
+                    \cdot 1.56 | x_1, ..., x_n) = 0.95
+                \]
+
+                $[83.8, 90.0]$ is called a 95\% credible interval on $\theta$.
+
+                \begin{warn}
+                    We should note that the 95\% credible interval for $\theta$,
+                    $[83.8, 90.0]$ is very similar to the 95\% confidence
+                    interval, $[83.7, 89.9]$, obtained earlier from the same
+                    data. This is not a coincidence as we will see later, but we
+                    \textit{must} keep in mind the different interpretations of
+                    the two intervals.
+                \end{warn}
+
+                \begin{definition}[Credible Interval]
+                    An interval $[l, u]$ is called a $100 \cdot (1 - \alpha)\%$
+                    \textbf{credible interval} for $\Theta$ given $X_1 = x_1,
+                    X_2 = x_2, ..., X_n = x_n$ when the posterior probability of
+                    $\Theta \in [l, u]$ is $1 - \alpha$.
+
+                    \[
+                        \bb{P}(l \leq \Theta \leq u | X_1 = x_1, ..., X_n = x_n)
+                        = 1 - \alpha
+                    \]
+
+                    $X_1, ..., X_n$ could be any other variable that comprise
+                    the data.
+                \end{definition}
+
+                To bring into sharper relief the difference between a confidence
+                interval and a credible interval, let's consider what happens
+                when we have a more informative prior, say:
+
+                \[
+                    \Theta \sim \mathcal{N}(90, 0.1^2)
+                \]
+
+                We have the same calculations as before, leaving us with:
+
+                \[
+                    \Theta | x_1, ..., x_n \sim \mathcal{N}(89.99, 0.0998^2)
+                \]
+
+                This is almost unchanged from the prior, due to the extremely
+                low variance of the prior reflecting strong prior knowledge in
+                the value of $\Theta \approx 90$.
+
+            \subsubsection{Theorem: General Case for Normal Sampling}
+                Consider a general situation as before, with $\sigma, \sigma_0$
+                and $\mu_0$ known constants, $X_i$ IID conditional on $\theta$,
+                distributed as follows:
+
+                \[
+                    X_i | \theta \sim \mathcal{N}(\theta, \sigma^2)
+                \]
+
+                and prior distribution:
+
+                \[
+                    \Theta \sim \mathcal{N}(\mu_0, \sigma_0^2)
+                \]
+
+                Then:
+
+                \[
+                    \Theta | x_1, ..., x_n \sim \mathcal{N}(\mu_n, \sigma^2_n)
+                \]
+
+                where:
+
+                \[
+                    \mu_n := \frac{\frac{\mu_0}{\sigma_0^2} + \frac{n\bar x_n}
+                    {\sigma^2}}{\frac{1}{\sigma_0^2} + \frac{n}{\sigma_0^2}}
+                \]
+                \[
+                    \sigma_n^2 := \left(\frac{1}{\sigma_0^2} +
+                    \frac{n}{\sigma^2}\right)^{-1}
+                \]
+
+                These formulae should probably just be memorised.
+
+                The proof is similar to the battery example given earlier.
+
+                So if $\frac{1}{\sigma^2} \ll \frac{n}{\sigma^2}$, then the
+                data will drive the posterior, and the credible interval will be
+                more similar to the confidence interval.
+
+                Whereas, if $\frac{1}{\sigma^2} \gg \frac{n}{\sigma^2}$, then
+                the prior will drive the posterior.
+
+                If $\frac{1}{\sigma^2} \approx \frac{n}{\sigma^2}$, then both
+                the data and the prior will influence the posterior.
+
+                \begin{warn}
+                    Thinking about the prior/posterior in this way really makes
+                    it clear why $\sigma_0, \mu_0$ (the std. dev. and mean for
+                    the prior) should not be based on the data! They must
+                    reflect the uncertainty about $\theta$ as if you had not
+                    seen the data.
+                \end{warn}
+
+        \subsection{Sequential Updating and Prediction}
+            Let's look at the posterior after a single observation, $X_1 = x_1$:
+
+            \[
+                f(\theta | x_1) \propind{\theta} f(\theta)f(x_1 | \theta)
+            \]
+
+            Now after the second observation, $X_2 = x_2$:
+
+            \begin{align*}
+                f(\theta | x_1, x_2) &\propind{\theta} f(\theta) f(x_1 | \theta)
+                    f(x_2 | \theta) \\
+                & \propind{\theta} f(\theta | x_1) f(x_2 | \theta)
+            \end{align*}
+
+            So, we can treat the posterior after our first observation as our
+            prior for the posterior following the second! Similarly, after the
+            third observation, $X_3 = x_3$:
+
+            \begin{align*}
+                f(\theta | x_1, x_2, x_3) & \propind{\theta} f(\theta) f(x_1 |
+                    \theta) f(x_2 | \theta) f(x_3 | \theta) \\
+                & \propind{\theta} f(\theta | x_1, x_2) f(x_3 | \theta)
+            \end{align*}
+
+            \subsubsection{The Sequential Updating Theorem}
+                \[
+                    f(\theta | x_1, ..., x_{n+1}) \propind{\theta} f(\theta |
+                    x_1, ..., x_n) f(x_{n+1} | \theta)
+                \]
+
+                We can treat the posterior after $n$ observations as the prior
+                for updating with observation $n + 1$.
+
+                The constant of proportionality has a special meaning,
+                encapsulated in the following theorem.
+
+            \subsubsection{Theorem: Predictive Distribution from Sequential
+            Updates}
+                \[
+                    f(\theta | x_1, ..., x_{n + 1}) = \frac{f(\theta | x_1, ...,
+                    x_n)f(x_{n+1} | \theta)}{f(x_{n+1} | x_1, ..., x_n)}
+                \]
+
+                So the constant of proportionality is the predictive
+                distribution! We will use this to predict the next observation
+                given the previous observations.
+
+                \paragraph{Proof}
+                    \begin{align*}
+                        f(\theta | x_1, ..., x_{n+1}) f(x_{n+1} | x_1, ..., x_n)
+                            & = f(\theta, x_{n+1} | x_1, ..., x_n) \\
+                        & = f(x_{n+1} | \theta, x_1, ..., x_n) f(\theta | x_1,
+                            ..., x_n) \\
+                        & = f(x_{n+1} | \theta) f(\theta | x_1, ..., x_n) &
+                            \textit{(by IID on $\theta$)} \quad \square
+                    \end{align*}
+
+                \begin{definition}[Prior Predictive PDF]
+                    We define the \textbf{prior predictive pdf} to be
+                    $f(x_{n+1})$, and the \textbf{posterior predictive pdf} to
+                    be $f(x_{n+1} | x_1, ..., x_n)$.
+
+                    We use the prior predictive pdf to predict $X_{n+1}$ before
+                    having seen the data, and the posterior predictive to
+                    predict $X_{n + 1}$ after having seen the data.
+                \end{definition}
+
+            \subsubsection{Prediction in the Battery Example}
+                Consider again the battery example with $X_i$ IID conditional on
+                $\Theta$ distributed according to:
+
+                \[
+                    X_i | \theta \sim \mathcal{N}(\theta, 5^2)
+                \]
+
+                with the prior distribution for $\Theta$ given by:
+
+                \[
+                    \Theta \sim \mathcal{N}(90, 10^2)
+                \]
+
+                Let's find $f(x_{n+1} | x_1, ..., x_n)$ for our specific data.
+                One way to do so is to use theorem 2.3.2, and if need be,
+                evaluate up to $\propind{x_{n+1}}$:
+
+                \[
+                    f(x_{n+1} | x_1, ..., x_n) = \frac{f(\theta | x_1, ..., x_n)
+                    f(x_{n+1} | \theta)}{f(\theta | x_1, ..., x_{n+1})}
+                \]
+
+                Note that, since the left hand side is not a function of
+                $\theta$, you should either see that factors of $\theta$ on the
+                right hand side cancel out, or just fix a value of $\theta$
+                where $f(\theta | x_1, ..., x_{n + 1}) > 0$.
+
+                \[
+                    f(x_{n+1} | x_1, ..., x_n) \propind{x_{n+1}}
+                        \frac{f(x_{n+1} | \theta)}{f(\theta |x_1, ..., x_{n+1})}
+                \]
+
+                Alternatively, we could also evaluate, up to
+                $\propind{x_{n+1}}$:
+
+                $$
+                    f(x_{n+1}|x_1, ..., x_n) = \int f(x_{n+1}|\theta)f(\theta|
+                    x_1, ..., x_n) d\theta
+                $$
+
+                In our case, with $\sigma = 5, \mu_n = 86.9, \sigma_n = 1.56$,
+                we have:
+
+                \begin{align*}
+                    f(x_{n + 1} | x_1, ..., x_n) & = \int_{-\infty}^\infty
+                        \frac{1}{\sigma\sqrt{2\pi}} \exp{-\frac{1}{2}\left(
+                        \frac{x_{n+1} - \theta}{\sigma}\right)^2} \cdot
+                        \frac{1}{\sigma_n\sqrt{2\pi}} \exp{-\frac{1}{2}\left(
+                        \frac{\theta - \mu_n}{\sigma_n}\right)^2} d\theta \\
+                    & \propind{x_{n+1}} \int_{-\infty}^\infty \exp{-\frac{1}{2}
+                        \left(\left(\frac{x_{n+1} - \theta}{\sigma}\right)^2 +
+                        \left(\frac{\theta - \mu_n}{\sigma_n}\right)^2\right)}
+                        d\theta \\
+                    & = \int_{-\infty}^\infty \exp{-\frac{1}{2}\left[\left(
+                        \frac{1}{\sigma^2} + \frac{1}{\sigma_n^2}\right)\left(
+                        \theta - \frac{\frac{x_{n+1}}{\sigma^2} +
+                        \frac{\mu_n}{\sigma_n^2}}{\frac{1}{\sigma^2} +
+                        \frac{1}{\sigma_n^2}}\right)^2 + (\sigma^2 +
+                        \sigma_n^2)^{-1}(x_{n+1} - \mu_n)^2\right]} d\theta \\
+                    & = \exp{\left(-\frac{1}{2}\frac{(x_{n+1} - \mu_n)^2}{
+                        \sigma^2 + \sigma_n^2}\right)} \cdot \int_{-\infty}
+                        ^\infty \exp{-\frac{1}{2}\left(\frac{\theta - \mu_{n+1}}
+                        {\sigma{n+1}}\right)^2} \\
+                    & \propind{x_{n + 1}} \exp{-\frac{1}{2} \frac{1}{\sigma^2 +
+                        \sigma_n^2} (x_{n+1} - \mu_n)^2}
+                \end{align*}
+
+                $$
+                    \implies X_{n+1} | x_1, ..., x_n \sim \mathcal{N}(\mu_n,
+                    \sigma^2 + \sigma_n^2)
+                $$
+
+                Substituting our specific data, we have $\mu_n = 86.9, \sqrt{
+                \sigma^2 + \sigma_n^2} = 5.24$. So:
+
+                $$
+                    \bb{P}(86.9 - 1.96 \cdot 5.24 \leq X_{n+1} \leq 86.9 + 1.96
+                    \cdot 5.24 | x_1, ..., x_n) = 0.95
+                $$
+
+                and the 95\% posterior prediction interval for $X_{n+1}$ is:
+
+                $$
+                    [76.6, 97.2]
+                $$
+
+                This is very similar to the 95\% frequentist prediction interval
+                $[76.5, 97.1]$ for the same data obtained earlier.
+
+                If, instead, we had a prior pdf for $\Theta$ such that:
+
+                $$
+                    \Theta \sim \mathcal{N}(90, 0.1^2)
+                $$
+
+                we would have $\mu_n = 89.99, \sigma_n = 0.0998$, as seen
+                earlier, so the 95\% posterior prediction interval is:
+
+                $$
+                    [89.99 - 1.96\sqrt{5^2 + 0.0998^2}, 89.99 + 1.96\sqrt{5^2 +
+                    0.0998^2}] = [80.188, 99.792]
+                $$
+
+                Due to the very low variance in the prior pdf, we would expect
+                this prediction interval to be almost identical to the 95\%
+                prior prediction interval. This would be:
+
+                $$
+                    [90 - 1.96 \sqrt{5^2 + 0.1}, 90 + 1.96\sqrt{5^2 + 0.1}] =
+                    [80.198, 99.802]
+                $$
+
+                \begin{relq}
+                    These questions are probably appropriate for the whole of
+                    section 2.
+
+                    [DS12, section 7.2, exercises 1, 2, 3, 4, 5, 6, 7, 10, 11]
+                \end{relq}
+
+    \newpage
+    \section*{Aside: Summary of Content Covered Thus Far}
+    \addcontentsline{toc}{section}{\protect\numberline{}Aside: Summary of
+    Content Covered in Sections 1/2}
+        \subsection*{Frequentist Method}
+        \addcontentsline{toc}{subsection}{\protect\numberline{}Frequentist
+        Method}
+            \begin{itemize}
+                \item Needs a likelihood, given by:
+
+                    $$
+                        \prod_{i=1}^n f(x_i | \theta)
+                    $$
+
+                \item We constructed confidence intervals, conditioned on the
+                    parameter $\theta$:
+
+                    $$
+                        \bb{P}(L \leq \theta \leq U | \theta) = 1 - \alpha
+                    $$
+
+                    where $L, U$ are functions of the data, e.g: $\bar X_n \pm
+                    z_{\alpha/2}, ...$
+
+                \item We don't have a sense of having a distribution for a
+                    predictive quantity based on the data in the frequentist
+                    approach.
+
+                \item We constructed frequentist prediction intervals:
+
+                    $$
+                        \bb{P}(L \leq X_{n+1} \leq U | \theta) = 1 - \alpha
+                    $$
+            \end{itemize}
+
+        \subsection*{Bayesian Method}
+        \addcontentsline{toc}{subsection}{\protect\numberline{}Bayesian Method}
+            \begin{itemize}
+                \item Needs a posterior $\propto$ prior $\times$ likelihood:
+
+                    $$
+                        f_{\alpha_0}(\theta | x_1, ..., x_n) \propind{\theta}
+                        f_{\alpha_0} \prod_{i=1}^n f(x_i | \theta)
+                    $$
+
+                    Here, $\alpha_0$ is a hyper-parameter, like $\mu_0,
+                    \sigma_0$: It's a parameter that determines the distribution
+                    of other parameters.
+
+                \item We constructed credible intervals, conditioned on the
+                    data:
+
+                    $$
+                        \bb{P}(l \leq \Theta \leq u | x_1, ..., x_n) = 1 -
+                        \alpha
+                    $$
+
+                    where $l, u$ are functions of the data and the
+                    hyper-parameters (so $\alpha_0, x_1, ..., x_n$).
+
+                \item We looked at the posterior predictive distribution:
+
+                    $$
+                        f_{\alpha_0}(x_{n+1} | x_1, ..., x_n) \propind{x_{n+1}}
+                        \frac{f(x_{n+1}| \theta)}{f_{\alpha_0}(\theta | x_1,
+                        ..., x_{n+1})}
+                    $$
+
+                \item We constructed posterior prediction intervals, also
+                    conditioned on the data:
+
+                    $$
+                        \bb{P}(l \leq X_{n+1} \leq u | x_1, ..., x_n) = 1 -
+                        \alpha
+                    $$
+
+                \item We looked at the prior predictive distribution:
+
+                    $$
+                        f_{\alpha_0}(x_{n+1}) \propind{x_{n+1}} \frac{f(x_{n+1}
+                        | \theta)}{f_{\alpha_0}(\theta)}
+                    $$
+
+                \item We constructed prior predictive intervals:
+
+                    $$
+                        \bb{P}(l' \leq X_{n+1} \leq u') = 1 - \alpha
+                    $$
+
+                    where $l', u'$ are functions of $\alpha_0$ only.
+            \end{itemize}
+
+    \newpage
+    \section{Conjugate Distributions}
+        \subsection{Sampling from a Normal with Known Variance}
+            We saw that, in the context of the battery example, if $X_i | \theta
+            \sim \mathcal{N}(\theta, \sigma^2)$ IID conditional on $\Theta$, and
+            $\Theta \sim \mathcal{N}(\mu_0, \sigma_0)$, then the posterior
+            distribution for $\Theta$ is also normal:
+
+            $$
+                \Theta | x_1, ..., x_n \sim \mathcal{N}(\mu_n, \sigma_n^2())
+            $$
+
+            with simple formulae for $\mu_n, \sigma_n$ as functions of $\mu_0,
+            \sigma_0, x_1, ..., x_n$ to update from the prior to the posterior.
+
+            The property that the posterior is from the same class of
+            distribution as the prior is not unique to this scenario!
+
+        \subsection{Sampling from a Bernoulli Distribution}
+            \subsubsection{Example: Clinical Trial}
+                150 patients are randomly selected, and receive different
+                treatments for depression: Imipramine (treatment 1), lithium
+                carbonate (treatment 2), a combination of the two (treatment 3),
+                or a placebo (treatment 4). The following table shows the number
+                of patients who suffered a relapse within three years:
+
+                \begin{center}
+                    \begin{tabular}{c | c c c c | c}
+                        Treatment & 1 & 2 & 3 & 4 & Total \\
+                        \hline
+                        Relapse & 18 & 13 & 22 & 24 & 77 \\
+                        No relapse & 22 & 25 & 16 & 10 & 73 \\
+                        \hline
+                        Total & 40 & 38 & 38 & 34 & 150
+                    \end{tabular}
+                \end{center}
+
+                For now, we'll just focus on treatment 1, and try to apply
+                Bayesian methods in order to make statistical inferences. Let
+                $\Theta$ be the proportion of patients from the general
+                population suffering from depression who do not relapse under
+                this treatment.
+
+                The first step is to identify the statistical model: We will
+                define the random variable as follows:
+
+                $$
+                    X_i = \begin{cases}0, & \text{if patient relapses} \\
+                    1 & \text{if patient does not relapse}\end{cases}
+                $$
+                $$
+                    X_i | \theta \sim \text{Bernoulli}(\theta)
+                $$
+
+                (so $\bb{P}(X_i = 1 | \theta) = \theta, \bb{P}(X_i = 0 | \theta)
+                = 1 - \theta$).
+
+                We will assume the following prior distribution for $\Theta$:
+
+                $$
+                    \Theta \sim \text{Beta}(\alpha, \beta), \quad \alpha > 0,
+                    \beta > 0
+                $$
+
+                \begin{definition}[Beta Distribution]
+                    Let $\alpha > 0, \beta > 0$. We say that $\theta$ follows a
+                    \textbf{Beta distribution}, $\text{Beta}(\alpha, \beta)$,
+                    when $\Theta$ has the following pdf:
+
+                    $$
+                        f(\theta) := \begin{cases}\frac{\gamma(\alpha + \beta)}
+                        {\gamma(\alpha)\gamma(\beta)} \cdot \theta^{\alpha - 1}
+                        \cdot (1 - \theta)^{\beta - 1}, & 0 \leq \theta \leq 1
+                        \\ 0, & \text{otherwise}\end{cases}
+                    $$
+
+                    N.b: $\frac{\gamma(\alpha + \beta)}{\gamma(\alpha)\gamma
+                    (\beta)}$ is the normalisation constant.
+                \end{definition}
+
+\end{document}
