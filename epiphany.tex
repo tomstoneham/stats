@@ -95,6 +95,9 @@
         have actually scanned the first two chapters of [MR03], and these are
         available to read via DUO, under ``Library Resources''.
 
+        n.b: Only one person can "borrow" the DS12 ebook at a time, so email the
+        library staff if you can't access it.
+
         Throughout these notes, we will highlight certain information as
         follows:
 
@@ -1578,6 +1581,176 @@
 
                     N.b: $\frac{\gamma(\alpha + \beta)}{\gamma(\alpha)\gamma
                     (\beta)}$ is the normalisation constant.
+
+                    Note that, for the beta distribution, we have the following
+                    expressions:
+
+                    \[
+                        \E(\Theta) = \frac{\alpha}{\alpha + \beta}
+                    \]
+                    \[
+                        \var(\Theta) = \frac{\alpha\beta}{(\alpha + \beta)^2(
+                        \alpha + \beta + 1)}
+                    \]
+
+                    You don't need to remember these formulae, they'll be given
+                    to you if you have to use them in an exam setting.
+
+                    $\gamma$ is the \textbf{gamma function}. We don't need to
+                    know much about it, other than that for $z > 0$, we have
+                    $\gamma(z) > 0$. Again, if we need to use its properties in
+                    an exam, we will be given them. There is not a closed form
+                    expression for its entire domain.
                 \end{definition}
+
+                Returning to the clinical trial example, let's look at the
+                likelihood. As this is a discrete case, we'll have a pmf rather
+                than a pdf, which by the IID cond on $\Theta$ assumption, is
+                given by:
+
+                \begin{align*}
+                    p(x_1, ..., x_n | \theta) &= \prod_{i=1}^n \theta^{x_i} (1 -
+                        \theta)^{1 - x_i} \\
+                    & = \theta^y (1 - \theta)^{n - y}, \quad \left(
+                        \textit{where } y := \sum_{i=1}^n x_i\right)
+                \end{align*}
+
+                So $Y_i = \sum\limits_{n=1}^n X_i$ is a sufficient statistic,
+                and since we have the data, we have a sufficient statistic!
+
+                Now let's find the posterior distribution:
+
+                \begin{align*}
+                    f(\theta | x_i, ..., x_n) & \propind{\theta} f(\theta)
+                        p(x_1, ..., x_n | \theta) \\
+                    & \propind{\theta} \begin{cases}\theta^{\alpha + y -1} \cdot
+                        (1 - \theta)^{\beta + n - y - 1}, & \theta \in [0, 1] \\
+                        0, & \text{otherwise}\end{cases} \\
+                \end{align*}
+
+                So the posterior distribution must be a $\text{Beta}(\alpha + y,
+                \beta + x - y)$ distribution.
+
+            \subsubsection{Theorem}
+                If $x_i | \theta \sim \text{Bernoulli}(\theta)$ and IID
+                conditional on $\Theta$, and $\Theta \sim \text{Beta}(\alpha_0,
+                \beta_0)$ for some constants $\alpha_0, \beta_0 > 0$ then we've
+                shown that $\Theta | x_1, ..., x_n \sim \text{Beta}(\alpha_n,
+                \beta_n)$ where, with $y := \sum\limits_{i=1}^n x_i$, we have:
+
+                \[
+                    \alpha_n := \alpha_0 + y
+                \]
+                \[
+                    \beta+n := \beta_0 + n - y
+                \]
+
+            \subsubsection{Application of Bayesian Stats to Clinical Trial}
+                In the clinical trial above, if $\Theta \sim
+                \text{Beta}(1, 1) \, (= \text{Unif}(0, 1))$, then for the first
+                treatment, since $n = 40, y = 22$, we have that:
+
+                \[
+                    \Theta | x_1, ..., x_n \sim \text{Beta}(1 + 22, 1 + 40 - 22)
+                    = \text{Beta}(23, 19)
+                \]
+
+                For the posterior expectation/variance, we have:
+
+                \[
+                    \E(\Theta | x_1, ..., x_n) = \frac{1 + 22}{1 + 22 + 1 + 40 -
+                    22} = \frac{23}{42} = 0.45
+                \]
+                \[
+                    \var(\Theta | x_1, ..., x_n) = \frac{23 \cdot 19}{42^2 \cdot
+                    43} = 0.076^2
+                \]
+
+                For comparison with the prior, we had $\E(\Theta) = \frac{1}{2},
+                \var(\Theta) = 0.29^2$. So the uncertainty has really decreased.
+
+                For the credible interval, unfortunately, there's no closed form
+                when using the beta distribution.
+
+        \subsection{Conjugate Families and Hyper-Parameters}
+            \begin{definition}[Conjugate Families]
+                Assume we have data $X_i$, IID conditional on the parameter
+                $\Theta$ with pdf $f(x | \theta)$, or pmf $p(x | \theta)$. Let
+                $f_\alpha(\theta)$ represent a family of densities for $\Theta$,
+                indexed by the \textit{hyper-parameter} $\alpha \in \mathcal{A}
+                \subseteq \R^k$. Then this family is said to be a
+                \textbf{conjugate family of priors} for sampling from $f(x |
+                \theta)$ if $\fa \alpha_0 \in \mathcal{A}$, and all $n \in \N$,
+                and all possible samples $x_1, ..., x_n$, then $\ex \alpha_n \in
+                \mathcal{A}$ such that:
+
+                \[
+                    f(\theta) = f_{\alpha_0}(\theta) \implies f(\theta | x_1,
+                    ..., x_n) = f_{\alpha_n}(\theta)
+                \]
+
+                i.e: Whenever the prior belongs to the family, then so does the
+                posterior.
+            \end{definition}
+
+            The benefit of using a conjugate family is that \textit{updating the
+            distribution is reduced to updating just the hyper-parameters!}
+
+            Let's consider, for example, the case using the normal distribution.
+            $\mathcal{N}(\mu_0, \sigma_0^2)$, with hyperparameters $\mu_0
+            \in \R, \sigma_0 > 0$, is a conjugate family for $X_i | \theta \sim
+            \mathcal{N}(\theta, \sigma^2)$, assuming that $\sigma$ is known.
+
+            \[
+                \mu_n := \frac{\frac{\mu_0}{\sigma_0^2} + \frac{n\bar
+                x}{\sigma^2}}{\frac{1}{\sigma_0^2} + \frac{n}{\sigma^2}}
+            \]
+            \[
+                \sigma_n^2 := \left(\frac{1}{\sigma_0^2} + \frac{n}{\sigma^2}
+                \right)^{-1}
+            \]
+
+            Now considering a beta distribution, $\text{Beta}(\alpha_0, \beta_0)
+            $ with hyper-parameters $\alpha_0, \beta_0 > 0$ is a conjugate family
+            for $X_i | \theta \sim \text{Bernoulli}(\theta)$, with:
+
+            \[
+                \alpha_n := \alpha_0 + \sum\limits_{i=1}^n x_i
+            \]
+            \[
+                \beta_n := \beta_0 + n - \sum\limits_{i=1}^n x_i
+            \]
+
+
+        \subsection{Sampling from an Exponential Distribution}
+            \begin{fread}
+                [DS12]
+            \end{fread}
+
+            \subsubsection{Example: Lifetimes of Electrical Components}
+                Consider a company selling electrical components. Each component
+                is assumed to fail with probability $\theta dt$ in any time
+                interval $[t, t + dt]$ for small values of $dt$, where $\theta$
+                is an unknown parameter. So the component lifetimes are
+                exponentially distributed, as follows:
+
+                \[
+                    X_i | \theta \sim \text{Exp}(\theta)
+                \]
+
+                in which $\theta$ is called the rate parameter. The pdf for this
+                distribution is given by:
+
+                \[
+                    f(x_i | \theta) = \begin{cases}\theta \exp{(-\theta x_i)}, &
+                    x_i \geq 0 \\ 0, & \text{otherwise}\end{cases}
+                \]
+
+                We make the usual assumption that the $X_i$ are IID conditional
+                on $\Theta$.
+
+                A priori, the company judges that $\E(\Theta) = 0.5,
+                \var(\Theta) = 0.5^2$. We then observe: $x_1 = 3,
+                x_1 = 1.5, x_3 = 2.1$. What can we say about future failures?
 
 \end{document}
