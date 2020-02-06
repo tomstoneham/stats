@@ -1194,7 +1194,7 @@
 
                 \[
                     \mu_n := \frac{\frac{\mu_0}{\sigma_0^2} + \frac{n\bar x_n}
-                    {\sigma^2}}{\frac{1}{\sigma_0^2} + \frac{n}{\sigma_0^2}}
+                    {\sigma^2}}{\frac{1}{\sigma_0^2} + \frac{n}{\sigma^2}}
                 \]
                 \[
                     \sigma_n^2 := \left(\frac{1}{\sigma_0^2} +
@@ -1573,13 +1573,13 @@
                     when $\Theta$ has the following pdf:
 
                     $$
-                        f(\theta) := \begin{cases}\frac{\gamma(\alpha + \beta)}
-                        {\gamma(\alpha)\gamma(\beta)} \cdot \theta^{\alpha - 1}
+                        f(\theta) := \begin{cases}\frac{\Gamma(\alpha + \beta)}
+                        {\Gamma(\alpha)\Gamma(\beta)} \cdot \theta^{\alpha - 1}
                         \cdot (1 - \theta)^{\beta - 1}, & 0 \leq \theta \leq 1
                         \\ 0, & \text{otherwise}\end{cases}
                     $$
 
-                    N.b: $\frac{\gamma(\alpha + \beta)}{\gamma(\alpha)\gamma
+                    N.b: $\frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma
                     (\beta)}$ is the normalisation constant.
 
                     Note that, for the beta distribution, we have the following
@@ -1596,9 +1596,9 @@
                     You don't need to remember these formulae, they'll be given
                     to you if you have to use them in an exam setting.
 
-                    $\gamma$ is the \textbf{gamma function}. We don't need to
+                    $\Gamma$ is the \textbf{gamma function}. We don't need to
                     know much about it, other than that for $z > 0$, we have
-                    $\gamma(z) > 0$. Again, if we need to use its properties in
+                    $\Gamma(z) > 0$. Again, if we need to use its properties in
                     an exam, we will be given them. There is not a closed form
                     expression for its entire domain.
                 \end{definition}
@@ -1752,5 +1752,177 @@
                 A priori, the company judges that $\E(\Theta) = 0.5,
                 \var(\Theta) = 0.5^2$. We then observe: $x_1 = 3,
                 x_1 = 1.5, x_3 = 2.1$. What can we say about future failures?
+
+                We need to identify:
+
+                \begin{enumerate}
+                    \item A family of conjugate priors for this case (i.e: the
+                        case of sampling from an exponential distribution)
+                    \item The posterior pdf of $\Theta$
+                    \item The posterior \textit{predictive} pdf of $\Theta$
+                \end{enumerate}
+
+                \begin{definition}[Gamma Distribution]
+                    We say that $\Theta \sim \text{Gamma}(\alpha, \beta)$ for
+                    $\alpha, \beta > 0$ if the pdf is given by:
+
+                    \[
+                        f(\theta) = \begin{cases}\frac{\beta^\alpha}
+                        {\Gamma(\alpha)} \theta^{\alpha - 1} e^{-\beta\theta},
+                        & \theta \geq 0 \\ 0, & \text{otherwise}\end{cases}
+                    \]
+
+                    This is the family of \textbf{gamma distributions}.
+
+                    For a gamma distribution, we have the following results:
+
+                    \begin{itemize}
+                        \item $\E(\Theta) = \frac{\alpha}{\beta}$
+                        \item $\var(\Theta) = \frac{\alpha}{\beta^2}$
+                        \item If $\alpha = 1$, then we have $\text{Gamma}(1,
+                            \beta) = \text{Exp}(\beta)$
+                    \end{itemize}
+                \end{definition}
+
+                In this example, if $\Theta \sim \text{Gamma}(\alpha_0,
+                \beta_0)$ for some known constants $\alpha_0, \beta_0 > 0$, then
+                for $\theta \geq 0$, the posterior distribution follows:
+
+                \begin{align*}
+                    f(\theta | x_1, ..., x_n) & \propind{\theta} f(\theta)
+                        \prod_{i=1}^n f(x_i | \theta) \\
+                    & \propind{\theta} \theta^{\alpha_0 - 1} e^{-\beta_0\theta}
+                        \prod_{i=1}^n \theta e^{-\theta x_i} \\
+                    & = \theta^{\alpha_0 + n - 1} \exp{-(\beta_0 + \sum_{i=1}^n
+                        x_i)\theta}
+                \end{align*}
+
+                This is a $\text{Gamma}(\alpha_n, \beta_n)$ pdf, with:
+
+                \[
+                    \alpha_n := \alpha_0 + n
+                \]
+                \[
+                    \beta_n := \beta_0 + \sum_{i=1}^n x_i
+                \]
+
+                So, the family of Gamma distributions is \textit{conjugate for
+                exponential sampling}.
+
+                In this example, we need that $\E(\Theta) =
+                \frac{\alpha_0}{\beta_0} = \frac{1}{2}$, and $\var(\Theta) =
+                \frac{\alpha_0}{\beta_0^2} = \frac{1}{4}$, so we can very easily
+                see that $\alpha_0 = 1, \beta_0 = 2$.
+
+                The posterior distribution will be a $\text{Gamma}(\alpha_n,
+                \beta_n)$ distribution, with:
+
+                \[
+                    \alpha_n = \alpha_0 + n = 1 + 3 = 4
+                \]
+                \[
+                    \beta_n = \beta_0 + \sum_{i=1}^n x_i = 8.6
+                \]
+
+                Note that, from the posterior distribution, we therefore have
+                $\E(\Theta | x_1, ..., x_n) = \frac{4}{8.6} \approx 0.47 \approx
+                \frac{1}{2}$, so the expectation is still pretty close to the
+                prior distribution. However, when considering the variance,
+                $\var(\Theta | x_1, ..., x_n) = \frac{4}{8.6^2} = 0.054 \ll
+                \frac{1}{4}$, so the variance has greatly decreased.
+
+                To find the posterior predictive pdf, we may use integration.
+                For $x_{n+1} \geq 0$, we have:
+
+                \begin{align*}
+                    f(x_{n+1} | x_1, ..., x_n) = & \int_0^\infty f(x_{n+1} |
+                        \theta) \cdot f(\theta | x_1, ..., x_n) d\theta \\
+                    \propind{x_{n + 1}} & \int_0^\infty \theta \exp(-\theta
+                        x_{n+1}) \theta^{\alpha_{n-1}} \exp(-\beta_n \theta)
+                        d\theta \\
+                    = & \int_0^\infty \theta^{\alpha_n} \exp(-(\beta_n +
+                        x_{n+1})\theta) d\theta \\
+                \end{align*}
+
+                The integrand here is the pdf of a $\text{Gamma}(\alpha_{n} + 1,
+                \beta_{n} + x_{n+1})$ distribution, up to some normalisation
+                constant, so the integral is the Gamma function over such a
+                constant:
+
+                \begin{align*}
+                    = & \frac{\Gamma(\alpha_n + 1)}{(\beta_n + x_{n+1})
+                        ^{\alpha_n + 1}} \\
+                    \propind{x_{n+1}} & (\beta_n + x_{n+1})^{-(\alpha_n + 1)}
+                \end{align*}
+
+                An alternative method for finding this result is to consider:
+
+                \begin{align*}
+                    f(x_{n+1} | x_1, ..., x_n) & = \frac{f(x_{n+1} | \theta)
+                        f(\theta | x_1, ..., x_n)}{f(\theta | x_1, ...,
+                        x_{n+1})} \\
+                    & = \frac{\theta e^{-x_{n+1}\theta}\beta_n^{\alpha_n} /
+                        \Gamma(\alpha_n) \cdot \theta^{\alpha_n - 1} e^{-\beta_n
+                        \theta}}{\beta_{n+1}^{\alpha_{n+1}}/\Gamma(\alpha_{n+1})
+                        \cdot \theta^{\alpha_{n+1} - 1} e^{-\beta_{n+1}\theta}}
+                        \\
+                    & = \frac{\Gamma(\alpha_n + 1)}{\Gamma(\alpha_n)} \cdot
+                        \frac{\beta_n^{\alpha_n}}{(\beta_n + x_{n+1})^{\alpha_n
+                        + 1}}
+                \end{align*}
+
+                This step is allowed because we have $\alpha_{n+1} = \alpha_n +
+                1, \beta_{n+1} = \beta_n + x_{n+1}$.
+
+                We then use a ``magical'' result that is left unproven for this
+                course: the first term equals $\alpha_n$:
+
+                \[
+                    f(x_{n+1} | x_1, ..., x_n) = \frac{\alpha_n
+                    \beta_n^{\alpha_n}}{(\beta_n + x_{n+1})^{\alpha_n + 1}}
+                \]
+
+                This is the same result.
+
+                Note that the posterior predictive pdf found here is
+                \textit{not} exponential! It follows the \textbf{Lomax
+                Distribution}: $X_{n+1} | x_1, ..., x_n \sim
+                \text{Lomax}(\alpha_n, \beta_n)$. For the Lomax distribution, we
+                have:
+
+                \begin{itemize}
+                    \item $\E(X_{n+1} | x_1, ..., x_n) = \frac{\beta_n}{\alpha_n
+                        - 1}$ if $\alpha_n > 1$
+                    \item $\var(X_{n+1} | x_1, ..., x_n) = \frac{\beta_n^2
+                        \alpha_n}{(\alpha_n - 1)^2(\alpha_n - 2)}$ if $\alpha >
+                        2$
+                \end{itemize}
+
+                In our case, the posterior predictive pdf of $X_4$ is:
+
+                \[
+                    f(x_4 | x_1, x_2, x_3) \propind{x_4} (8.6 + x^4)^{-5}
+                \]
+
+                with:
+
+                \[
+                    \E(x_4 | x_1, ..., x_3) = \frac{8.6}{3} = 2.87
+                \]
+                \[
+                    \var(x_4 | x_1, ..., x_3) = \frac{8.6^2 \cdot 4}{3^2 \cdot 2
+                    } = 4.05^2
+                \]
+
+                \begin{fread}
+                    [DS12, section 7.3] contains many more examples
+                \end{fread}
+
+                \begin{relq}
+                    [DS12, section 7.3, exercises 1 - 13, 17, 19, 20]
+
+                    Extra exercises: [DS12, section 7.3, exercises 14, 15, 16,
+                    23, 24]
+                \end{relq}
 
 \end{document}
