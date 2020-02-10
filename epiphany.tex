@@ -413,6 +413,47 @@
                     \beta_0 + \sum_{i=1}^n x_i\right)
                 \]
 
+        \subsection*{Bayes Estimators}
+        \addcontentsline{toc}{subsection}{\protect\numberline{}Bayes Estimators}
+            \paragraph{Standard Loss Functions}
+                \begin{itemize}
+                    \item \textbf{Squared Error Loss}
+
+                        \[
+                            L(\theta, \widehat \theta) := (\theta - \widehat
+                            \theta)^2
+                        \]
+                    \item \textbf{Absolute Error Loss}
+
+                        \[
+                            L(\theta, \widehat \theta) := |\theta - \widehat
+                            \theta|
+                        \]
+                \end{itemize}
+
+            \paragraph{Posterior Expected Loss}
+                \[
+                    \E(L(\Theta, \widehat \theta) | x_1, ..., x_n) :=
+                    \int_{-\infty}^\infty L(\theta, \widehat \theta) f(\theta |
+                    x_1, ..., x_n) d\theta
+                \]
+
+            \paragraph{Bayes Estimate in Squared Error Loss}
+                Bayes estimate for $\Theta$ is given by posterior expectation of
+                $\Theta$:
+
+                \[
+                    \delta(x_1, ..., x_n) = \E(\Theta | x_1, ..., x_n)
+                \]
+
+            \paragraph{Bayes Estimate in Absolute Error Loss}
+                Bayes estimate for $\Theta$ is posterior median of $\Theta$:
+
+                \[
+                    \bb{P}(\Theta \leq \delta(x_1, ..., x_n) | x_1, ..., x_n) =
+                    \frac{1}{2}
+                \]
+
     \newpage
     \section{Simple Frequentist Estimation and Prediction}
         \subsection{Statistical Modelling and Inference}
@@ -2271,6 +2312,176 @@
                     Extra exercises: [DS12, section 7.3, exercises 14, 15, 16,
                     23, 24]
                 \end{relq}
+
+    \newpage
+    \section{Bayes Estimators}
+        \begin{fread}
+            [DS12, section 7.4]
+        \end{fread}
+
+        Suppose that, instead of reporting the entire posterior distribution
+        $f(\theta | x_1, ..., x_n)$, we we only want to report a summary (i.e: a
+        single number, which is a function of the data such that this value is
+        somehow ``close'' to the parameter $\Theta$). In other words, we want to
+        find an \textit{estimator} for $\Theta$:
+
+        \[
+            \widehat \Theta := \delta(X_1, ..., X_n)
+        \]
+
+        We will find this based on the posterior distribution. We want to choose
+        $\delta$ such that $\delta(X_1, ..., X_n) - \Theta$ is close to zero.
+
+        We formally define this concept of ``distance'' with a loss function.
+
+        \subsection{Loss Functions}
+            \begin{definition}[Loss Function]
+                A \textbf{loss function} $L(\theta, \widehat \theta)$ is just a
+                real-valued function of two variables.
+
+                The idea is that if $\Theta = \theta$ and we choose $\widehat
+                \theta$ as our estimate, then we lose the amount $L(\theta,
+                \widehat \theta)$. Typically, the larger the distance between
+                $\theta$ and $\widehat \theta$, the larger the loss $L(\theta,
+                \widehat \theta)$ will be.
+            \end{definition}
+
+            \subsubsection{Examples of Loss Functions}
+                \begin{itemize}
+                    \item \textbf{Squared Error Loss}
+
+                        \[
+                            L(\theta, \widehat \theta) := (\theta - \widehat
+                            \theta)^2
+                        \]
+
+                    \item \textbf{Absolute Error Loss}
+
+                        \[
+                            L(\theta, \widehat \theta) := |\theta - \widehat
+                            \theta|
+                        \]
+
+                    \item Arbitrary example
+                        \[
+                            L(\theta, \widehat \theta) := \begin{cases}3(
+                            \widehat \theta - \theta)^2, & \theta \geq \widehat
+                            \theta \\ (\widehat \theta - \theta)^2, &
+                            \text{otherwise} \end{cases}
+                        \]
+
+                        Note that this is asymmetric, and could make sense if
+                        underestimating is more costly than overestimating (e.g:
+                        sea level rise).
+                \end{itemize}
+
+                We will mostly focus on squared error loss.
+
+        \subsection{Bayes Estimator}
+            If we have the posterior pdf $f(\theta | x_1, ..., x_n)$, then for
+            any $\widehat \theta$, we can find the posterior expected loss.
+
+            \begin{definition}[Posterior Expected Loss{,} Bayes Esimators and
+                Estimates]
+                The \textbf{posterior expected loss} is given by:
+
+                \[
+                    \E(L(\Theta, \widehat \theta) | x_1, ..., x_n) :=
+                    \int_{-\infty}^\infty L(\theta, \widehat \theta) f(\theta |
+                    x_1, ..., x_n) d\theta
+                \]
+
+                If working with a pmf, replace the integral with a sum.
+
+                Let $L$ be any loss function. For any $x_1, ..., x_n$, let
+                $\delta(x_1, ..., x_n)$ denote the value $\widehat \theta$ for
+                which the posterior expected loss is minimised. Then
+                $\delta(X_1, ..., X_n)$ is called the \textbf{Bayes Estimator}
+                of $\Theta$, an $\delta(x_1, ..., x_n)$ is called the
+                \textbf{Bayes Estimate} of $\widehat \Theta$.
+            \end{definition}
+
+            In other words, $\delta$ is chosen such that:
+
+            \[
+                \E(L(\Theta, \delta(x_1, ..., x_n)) | x_1, ..., x_n) =
+                \min \E(L(\Theta, \widehat\Theta) | x_1, ..., x_n)
+            \]
+
+            Note that $\delta$ depends on:
+
+            \begin{itemize}
+                \item The data, $x_1, ..., x_n$
+                \item The posterior distribution of $\Theta$
+                \item The loss function $L$
+            \end{itemize}
+
+            \subsubsection{Theorem: Bayes Estimate in Squared Error Loss}
+                Under squared error loss, the Bayes estimate for $\Theta$ is the
+                posterior expectation for $\Theta$, given by:
+
+                \[
+                    \delta(x_1, ..., x_n) = \E(\Theta | x_1, ..., x_n)
+                \]
+
+                \paragraph{Proof}
+                    For simplicity of exposition, we will omit the conditioning
+                    on $x_1, ..., x_n$.
+
+                    We need to show $\E((\Theta - \widehat \theta)^2)$ is
+                    minimised for $\widehat \theta = \E(\Theta)$. Indeed:
+
+                    \begin{align*}
+                        \E((\Theta - \widehat \theta)^2) & = \E((\Theta -
+                            \E(\Theta) + \E(\Theta) - \widehat \theta)^2) \\
+                        & = \E((\Theta - \E(\Theta))^2) + 2\E(\Theta -
+                            \E(\Theta))(\E(\Theta) - \widehat \theta) +
+                            (\E(\Theta - \widehat \theta)^2)
+                    \end{align*}
+
+            \subsubsection{Example}
+                Consider $X_i | \theta \sim \text{Bernoulli}$ IID conditional on
+                $\Theta$, with prior $\Theta \sim \text{Beta}(\alpha, \beta)$.
+
+                By conjugacy, we have the posterior $\Theta | x_1, ..., x_n \sim
+                \text{Beta}(\alpha_n, \beta_n)$ with $\alpha_n := \alpha_0 +
+                \sum\limits_{i=1}^n x_i, \beta_n := \beta_0 + n -
+                \sum\limits_{i=1}^n x_i$.
+
+                So the Bayes estimate under squared error loss is:
+
+                \[
+                    \E(\Theta | x_1, ..., x_n) = \frac{\alpha_n}{\alpha_n +
+                    \beta_n} = \frac{\alpha_0 + \sum\limits_{i=1}^n x_i}
+                    {\alpha_0 + \beta_0 + n}
+                \]
+
+                by the expression of the expectation of the beta distribution.
+                The Bayes estimator for $\Theta$ is:
+
+                \[
+                    \widehat \Theta := \frac{\alpha_0 + \sum\limits_{i=1}^n X_i}
+                    {\alpha_0 + \beta_0 + n}
+                \]
+
+                For instance, in our depression relapse problem, we had
+                $\alpha_0 = \beta_0 = 1, n = 40, \sum\limits_{i=1}^n x_i = 22$,
+                so $\widehat \theta = 23/42 = 0.55$ is our Bayes estimate.
+
+            \subsubsection{Theorem: Bayes Estimate in Absolute Error Loss}
+                Under absolute error loss, the Bayes estimate for $\Theta$ is
+                the posterior median of $\Theta$, i.e: $\delta(x_1, ..., x_n)$
+                is chosen such that:
+
+                \[
+                    \bb{P}(\Theta \leq \delta(x_1, ..., x_n) | x_1, ..., x_n) =
+                    \frac{1}{2}
+                \]
+
+                \paragraph{Proof}
+                    \begin{fread}
+                        [DS12, theorem 4.5.3]
+                    \end{fread}
 
     \newpage
     \section*{Problems Classes}
