@@ -2484,6 +2484,160 @@
                     \end{fread}
 
     \newpage
+    \section{Maximum Likelihood Estimators}
+        \subsection{Definitions}
+        As discussed previously, the \textbf{likelihood} is the pmf or pdf of
+        the data, given the parameter, written as follows via conditional
+        independence:
+
+        \[
+            f(x_1, ..., x_n | \theta) = \prod_{i=1}^n f(x_i | \theta)
+            (=l(\theta))
+        \]
+
+        Bayes' theorem gives us that the posterior is proportional to the
+        likelihood multiplied by the prior. But what do we do if we don't have a
+        prior? This problem is what we'll consider today.
+
+        \begin{definition}[Arg max{,} maximum likelihood estimator]
+            For any function $g(\theta)$, let $\argmax{\theta} g(\theta)$ denote
+            the value of $\theta$ for which $g(\theta)$ is maximised.
+
+            $\theta* = \argmax{\theta} g(\theta)$ when $g(\theta*) = \max_\theta
+            g(\theta)$.
+
+            We define the \textbf{maximum likelihood estimator} (MLE) of
+            $\Theta$ to be:
+
+            \[
+                \widehat \Theta = \delta(X_1, ..., X_n) = \argmax{\theta} f(X_1,
+                ..., X_n | \theta)
+            \]
+
+            After observing $X_1 = x_1, ..., X_n = x_n$, then:
+
+            \[
+                \widehat \theta = \delta(x_1, ..., x_n) = \argmax{\theta} f(x_1,
+                ..., x_n | \theta)
+            \]
+
+            is the \textbf{maximum likelihood estimate}.
+        \end{definition}
+
+        The interpretation of this is that $\widehat \theta$ is the value which
+        maximises the probability of the data conditional on $\theta$.
+
+        \subsection{Log Likelihood}
+            In practice, we often work with the \textbf{log likelihood}, given
+            by:
+
+            \[
+                L(\theta) := \log f(x_1, ..., x_n | \theta) = \sum_{i = 1}^n
+                \log f(x_i | \theta)
+            \]
+
+            and then maximise $L(\theta)$ instead. Since $\log$ is a strictly
+            increasing function, this is equivalent to maximising $l(\theta)$.
+
+            How do we maximise such a function? We need to find $\widehat
+            \theta$ such that $L'(\widehat \theta) = 0$ and $L''(\widehat
+            \theta) < 0$.
+
+            \subsubsection{Log Likelihood in Component Lifetimes Example}
+                We have $X_i | \theta \sim \text{Exp}(\theta), \theta > 0$, with
+                the observations $X_1 = 3, X_2 = 1.5, X_3 = 2.1$, and $X_i$ IID
+                conditional on $\theta$.
+
+                We therefore have the likelihood:
+
+                \begin{align*}
+                    f(x_1, ..., x_3 | \theta) & = \prod_{i=1}^3 \theta e^{
+                        -\theta x} \\
+                    & = \theta^3 e^{-\theta \sum\limits_{i=1}^3 x_i} \\
+                    & = \theta^3 e^{-6.6\theta}
+                \end{align*}
+
+                And the log likelihood:
+
+                \[
+                    L(\theta) = 3\log\theta - 6.6\theta
+                \]
+
+                We wish to maximise this.
+
+                \[
+                    L'(\theta) = \frac{3}{\theta} - 6.6, \quad L''(\theta) = -
+                    \frac{3}{\theta^2}
+                \]
+
+                At $\theta = \widehat \theta$, we have $L'(\widehat \theta) = 0
+                \iff \widehat \theta = 0.455$. It's clear that $L''(\theta) < 0
+                \fa \theta$, so the MLE is $\widehat \theta = 0.455$.
+
+        \subsection{Bernoulli Sampling}
+            Let's say we have $X_i \in \{0, 1\}, X_i | \theta \sim
+            \text{Bernoulli}(\theta)$, so $\bb{P}(X_i = 1 | \theta) = \theta,
+            \bb{P}(X_i = 0 | \theta) = 1 - \theta$.
+
+            Therefore, the likelihood is:
+
+            \begin{align*}
+                f(x_1, x_n | \theta) & = \prod_{i=1}^n \theta^{x_i} (1 - \theta)
+                    ^{1-x_i} \\
+                & = \theta^{\sum x_i} \cdot (1 - \theta)^{n - \sum x_i}
+            \end{align*}
+
+            So $f(x_1, ..., x_n | \theta) = \theta^y (1 - \theta)^{n - y}$ where
+            $y = \sum\limits_{i=1}^n x_i$, and we have the log likelihood:
+
+            \[
+                L(\theta) = y\log{\theta} + (n - y)\log(1 - \theta)
+            \]
+
+            To find the maximum, first consider the boundary cases:
+
+            \begin{itemize}
+                \item For $y = 0$, it's clear that $L(\theta)$ is monotone
+                    decreasing in $\theta$, so the maximum is at $\widehat
+                    \theta = 0$
+                \item For $y = n$, we have that $L(\theta)$ is monotone
+                    increasing in $\theta$, so $\widehat \theta = 1$
+            \end{itemize}
+
+            Otherwise, differentiate:
+
+            \[
+                L'(\theta) = \frac{y}{\theta} - \frac{n - y}{1 - \theta}
+            \]
+
+            At $\theta = \widehat \theta$:
+
+            \begin{align*}
+                & \frac{y}{\widehat \theta} - \frac{n - y}{1 - \widehat \theta}
+                    = 0 \\
+                \iff & y(1 - \widehat \theta) - (n - y)\widehat \theta) = 0 \\
+                \implies & n\widehat \theta = y \\
+                \implies & \widehat \theta = \frac{y}{n}
+            \end{align*}
+
+            This makes sense, since it's the sample proportion. We should also
+            check that $L''(\widehat \theta) < 0$, but we won't bother here.
+
+            So, the MLE $\widehat \theta = \frac{\sum\limits_{i=1}^n x_i}{n}$.
+
+            Let's now compare this with the Bayes estimator under squared error
+            loss, with prior $\Theta \sim \text{Beta}(\alpha_0, \beta_0)$, which
+            will be the posterior expectation:
+
+            \[
+                \E(\theta | x_1, ..., x_n) = \frac{\alpha_0 +
+                \sum\limits_{i=1}^n x_i}{\alpha_0 + \beta_0 + n}
+            \]
+
+            This Bayesian estimate will tend to the MLE $\widehat \theta$ as
+            $\alpha_0 \to 0, \beta_0 \to 0$.
+
+    \newpage
     \section*{Problems Classes}
     \addcontentsline{toc}{section}{\protect\numberline{}Problems Classes}
         \subsection*{07-Feb-2020}
