@@ -454,6 +454,138 @@
                     \frac{1}{2}
                 \]
 
+        \subsection*{Maximum Likelihood Estimators}
+        \addcontentsline{toc}{subsection}{\protect\numberline{}Maximum
+        Likelihood Estimators}
+
+            In general, the maximum likelihood of a parameter $\Theta$ is given
+            by:
+
+            \[
+                \widehat \Theta = \argmax{\theta} f(X_1, ..., X_n | \theta)
+            \]
+
+            where $\argmax{\theta} g(\theta) :=$ the value of $\theta$ for which
+            $g(\theta)$ is maximised.
+
+            \paragraph{Log Likelihood}
+                \[
+                    L(\theta) := \log f(x_1, ..., x_n | \theta)
+                \]
+
+            \paragraph{MLE in Exponential Sampling}
+                For $X_i | \theta \sim \text{Exp}(\theta)$ IID conditional on
+                $\theta$, with $n$ observations, we have the likelihood:
+
+                \[
+                    f(x_1, ..., x_n) = \theta^n e^{-\theta \sum\limits_{i=1}^n
+                    x_i}
+                \]
+
+                and the log likelihood:
+
+                \[
+                    L(\theta) = n\log{\theta} - \theta\sum_{i=1}^n x_i
+                \]
+
+                So we have the MLE:
+
+                \[
+                    \widehat \theta = \frac{n}{\sum\limits_{i=1}^n x_i}
+                \]
+
+            \paragraph{MLE in Bernoulli Sampling}
+                For $X_i | \theta \sim \text{Bernoulli}(\theta)$ IID conditional
+                on $\theta$, with $n$ observations, we have the likelihood:
+
+                \[
+                    f(x_1, ..., x_n | \theta) = \theta^y (1 - \theta)^{n - y}
+                \]
+
+                and the log likelihood:
+
+                \[
+                    L(\theta) = y\log{\theta} + (n - y)\log(1 - \theta)
+                \]
+
+                where:
+
+                \[
+                    y := \sum_{i=1}^n x_i
+                \]
+
+                So we have the MLE:
+
+                \[
+                    \widehat \theta = \frac{y}{n}
+                \]
+
+            \paragraph{MLE in Normal Sampling with Unknown Mean, Known Variance}
+                For $X_i | \theta \sim \mathcal{N}(\theta, \sigma^2)$ IID
+                conditional on $\theta$ with unknown $\theta$, known $\sigma^2$,
+                we have the log likelihood:
+
+                \[
+                    L(\theta) \propind{\theta} -\frac{1}{2}\frac{n}{\sigma^2}
+                    (\theta - \overline x_n)^2
+                \]
+
+                So we have the MLE:
+
+                \[
+                    \widehat \theta = \overline x_n
+                \]
+
+            \paragraph{MLE in Normal Sampling with Unknown Mean, Unknown
+            Variance}
+                For $X_i | \theta \sim \mathcal{N}(\mu, \sigma^2)$ IID
+                conditional on $\theta$ with unknown $\theta, \sigma^2$, we have
+                the likelihood:
+
+                \[
+                    f(x_1, ..., x_n | \mu, \tau) \propind{\mu, \tau}
+                    \tau^\frac{n}{2} \exp\left(-\frac{1}{2}\tau \sum_{i=1}^n
+                    (x_i - \mu)^2\right)
+                \]
+
+                and the log likelihood:
+
+                \[
+                    L(\mu, \tau) = \frac{n}{2}(\log\tau - \tau((\mu - \overline
+                    x_n)^2 + ...)) + ...
+                \]
+
+                where $\tau$ is the precision, $\tau := \frac{1}{\sigma^2}$. So
+                we have the MLEs:
+
+                \[
+                    \widehat \mu = \overline x_n
+                \]
+                \[
+                    \widehat \tau = \frac{S_n^2}{n}
+                \]
+
+                where $S_n^2 := \sum\limits_{i=1}^n (x_i - \overline x_n)^2$
+
+            \paragraph{Unbiased Estimation of Variance}
+                For $X_1, ..., X_n$ IID conditional on $\theta$, with:
+
+                \begin{align*}
+                    \mu(\theta) & := \E(X_i | \theta), \\
+                    \sigma^2(\theta) & := \var(X_i | \theta), \\
+                    \overline X_n & := \frac{1}{n} \sum\limits_{i=1}^n X_i, \\
+                    S_n^2 & := \sum\limits_{i=1}^n (X_i - \overline X_n)^2
+                \end{align*}
+
+                we have the unbiased estimators:
+
+                \[
+                    \widehat {\mu(\theta)} = \overline X_n
+                \]
+                \[
+                    \widehat {\sigma^2{\theta}} = \frac{S_n^2}{n - 1}
+                \]
+
     \newpage
     \section{Simple Frequentist Estimation and Prediction}
         \subsection{Statistical Modelling and Inference}
@@ -2497,7 +2629,9 @@
 
         Bayes' theorem gives us that the posterior is proportional to the
         likelihood multiplied by the prior. But what do we do if we don't have a
-        prior? This problem is what we'll consider today.
+        prior? Is it possible to construct an estimator for $\Theta$ based on
+        just the likelihood? This problem is what we'll consider in this
+        section.
 
         \begin{definition}[Arg max{,} maximum likelihood estimator]
             For any function $g(\theta)$, let $\argmax{\theta} g(\theta)$ denote
@@ -2532,16 +2666,15 @@
             by:
 
             \[
-                L(\theta) := \log f(x_1, ..., x_n | \theta) = \sum_{i = 1}^n
-                \log f(x_i | \theta)
+                L(\theta) := \log f(x_1, ..., x_n | \theta)
             \]
 
             and then maximise $L(\theta)$ instead. Since $\log$ is a strictly
             increasing function, this is equivalent to maximising $l(\theta)$.
 
-            How do we maximise such a function? We need to find $\widehat
-            \theta$ such that $L'(\widehat \theta) = 0$ and $L''(\widehat
-            \theta) < 0$.
+            How do we maximise such a function? We'll just use differentiation:
+            We need to find $\widehat \theta$ such that $L'(\widehat \theta) =
+            0$ and $L''(\widehat \theta) < 0$.
 
             \subsubsection{Log Likelihood in Component Lifetimes Example}
                 We have $X_i | \theta \sim \text{Exp}(\theta), \theta > 0$, with
@@ -2551,8 +2684,8 @@
                 We therefore have the likelihood:
 
                 \begin{align*}
-                    f(x_1, ..., x_3 | \theta) & = \prod_{i=1}^3 \theta e^{
-                        -\theta x} \\
+                    f(x_1, x_2, x_3 | \theta) & = \prod_{i=1}^3 \theta e^{
+                        -\theta x_i} \\
                     & = \theta^3 e^{-\theta \sum\limits_{i=1}^3 x_i} \\
                     & = \theta^3 e^{-6.6\theta}
                 \end{align*}
@@ -2582,8 +2715,8 @@
             Therefore, the likelihood is:
 
             \begin{align*}
-                f(x_1, x_n | \theta) & = \prod_{i=1}^n \theta^{x_i} (1 - \theta)
-                    ^{1-x_i} \\
+                f(x_1, ..., x_n | \theta) & = \prod_{i=1}^n \theta^{x_i} (1 -
+                    \theta)^{1-x_i} \\
                 & = \theta^{\sum x_i} \cdot (1 - \theta)^{n - \sum x_i}
             \end{align*}
 
@@ -2635,7 +2768,170 @@
             \]
 
             This Bayesian estimate will tend to the MLE $\widehat \theta$ as
-            $\alpha_0 \to 0, \beta_0 \to 0$.
+            $\alpha_0 \to 0, \beta_0 \to 0$. (We can't set $\alpha_0 = 0$ or
+            $\beta_0 = 0$ as $\text{Beta}(0, 0)$ is not a proper distribution).
+
+        \subsection{Normal Sampling with Unknown Mean and Known Variance}
+            When $X_i | \theta \sim \mathcal{N}(\theta, \sigma^2)$ with unknown
+            $\theta$ and known $\sigma^2$, we saw in section 2.2.4 that:
+
+            \[
+                f(x_1, ..., x_n | \theta) \propind{\theta} \exp\left(
+                -\frac{1}{2}\frac{n}{\sigma^2} (\theta - \overline x_n)^2\right)
+            \]
+
+            So:
+
+            \[
+                L(\theta) = -\frac{1}{2}\frac{n}{\sigma^2}(\theta - \overline
+                x_n)^2 + D
+            \]
+
+            where $D$ are terms that do not depend on $\theta$.
+
+            Clearly, this function is maximised for $\widehat \theta = \overline
+            x_n$. So the maxmimum likelihood estimator for $\Theta$ is
+            $\overline X_n$ (i.e: the sample mean, regardless of the variance).
+
+            Compare this with the Bayes estimate:
+
+            \[
+                \E(\Theta | x_1, ..., x_n) = \frac{\mu_0/\sigma_0^2 + n\overline
+                x_n/\sigma^2}{1/\sigma_0^2 + n/\sigma^2}
+            \]
+
+            Again, we recover the maximum likelihood estimator as $\sigma_0 \to
+            \infty$ (we can't set $\sigma_0 = \infty$ as $\mathcal{N}(\mu_0,
+            \infty)$ is not a valid normal distribution).
+
+        \subsection{Normal Sampling with Unknown Mean and Unknown
+        Variance/Precision}
+            It is slightly more convenient to work with the precision rather
+            than the standard deviation if variance is unknown.
+
+            \begin{definition}[Precision]
+                For a given standard deviation $\sigma$, we define the
+                \textbf{precision}, $\tau$, as follows:
+
+                \[
+                    \tau := \frac{1}{\sigma^2}
+                \]
+            \end{definition}
+
+            Our parameter is now a vector $\theta = (\mu, \tau)$ with 2
+            components. We assume that $X_i | \mu, \tau \sim \mathcal{N}(\mu,
+            \frac{1}{\tau})$ are IID conditional on $\Theta$. The likelihood is:
+
+            \begin{align*}
+                f(x_1, ..., x_n | \mu, \tau) & = \prod_{i=1}^n
+                    \sqrt{\frac{\tau}{2\pi}} \exp\left(-\frac{1}{2} \tau(x_i -
+                    \mu)^2\right) \\
+                & \propind{\mu, \tau} \tau^{\frac{n}{2}} \exp\left(-\frac{1}{2}
+                    \tau \sum_{i=1}^n (x_i - \mu)^2\right) \\
+            \end{align*}
+
+            So, by lemma 2.2.3(b):
+
+            \begin{align*}
+                L(\mu, \tau) &= \frac{n}{2}\log\tau - \frac{1}{2}\tau \sum_{i=1}
+                    ^n (x_i - \mu)^2 + D_1 \\
+                & = \frac{n}{2} \left(\log\tau - \tau((\mu - \overline x_n)^2 +
+                    D_2)\right) + D_3
+            \end{align*}
+
+            where $D_1, D_2, D_3$ are the terms that do not depend on $\mu$ or
+            $\tau$.
+
+            Clearly, for any $\tau > 0$, this is maximised for $\widehat \mu =
+            \overline x_n$. To find $\widehat \tau$, we must maximise:
+
+            \[
+                L(\widehat \mu, \tau) = \frac{n}{2}\log\tau - \frac{1}{2}\tau
+                \sum_{i=1}^n (x_i - \widehat \mu)^2 + ...
+            \]
+
+            over $\tau$.
+
+            \[
+                \frac{\partial L(\widehat \mu, \tau)}{\partial \tau} =
+                \frac{n}{2\tau} - \frac{1}{2} \sum_{i=1}^n (x_i - \overline
+                x_i)^2 = 0
+            \]
+
+            This is satisfied for:
+
+            \[
+                \frac{1}{\widehat \tau} = \widehat \sigma^2 = \frac{1}{n}
+                \sum_{i=1}^n (x_i - \overline x_n)^2 = \frac{S_n^2}{n}
+            \]
+
+            where $S_n^2 = \sum\limits_{i=1}^n (x_i - \overline x_n)^2$.
+
+            Note that:
+
+            \[
+                \frac{\partial^2 L(\widehat \mu, \tau)}{\partial \tau^2} =
+                -\frac{n}{2\tau^2} < 0 \quad \fa \tau > 0
+            \]
+
+            So yes, we have found a maximum.
+
+        \subsection{Unbiased Estimation of Variance}
+            \begin{fread}
+                [DS12, section 8.7]
+            \end{fread}
+
+            \subsubsection{Theorem}
+                Assume we have $X_1, ..., X_n$ IID conditional on some parameter
+                $\Theta$. Let the following definitions hold:
+
+                \begin{align*}
+                    \mu(\theta) & := \E(X_i | \theta), \\
+                    \sigma^2(\theta) & := \var(X_i | \theta), \\
+                    \overline X_n & := \frac{1}{n} \sum\limits_{i=1}^n X_i, \\
+                    S_n^2 & := \sum\limits_{i=1}^n (X_i - \overline X_n)^2
+                \end{align*}
+
+                Then, $\overline X_n$ is an unbiased estimator for $\mu(\Theta)$
+                and $\frac{S_n^2}{n - 1}$ is an unbiased estimator for
+                $\sigma^2(\Theta)$.
+
+                \begin{warn}
+                    This means that, for normal sampling with unknown $\mu,
+                    \theta^2$, the maximum likelihood estimator for $\sigma^2$,
+                    namely $\frac{S_n^2}{n}$, is biased! We should instead use
+                    $\frac{S_n^2}{n - 1}$.
+                \end{warn}
+
+                \paragraph{Proof}
+                    The first part of the proof is easier:
+
+                    \[
+                        \E(\overline X_n | \theta) = \frac{1}{n} \sum_{i=1}^n
+                        \E(X_i | \theta) = \frac{1}{n} \cdot n\mu(\theta) =
+                        \mu(\theta)
+                    \]
+
+                    For the second part, note that:
+
+                    \begin{align*}
+                        \sum_{i=1}^n (X_i - \mu(\theta))^2 & = \sum_{i=1}^n (X_i
+                            - \overline X_n + \overline X_n - \mu(\theta))^2 \\
+                        & = \sum_{i=1}^n (X_i - \overline X_n)^2 + n (\overline
+                            X_n - \mu(\theta))^2 + 2\sum_{i=1}^n (X_i -
+                            \overline X_n)(\overline X_n - \mu(\theta)) \\
+                        & = S_n^2 + n(\overline X_n - \mu(\theta))^2
+                    \end{align*}
+
+                    So:
+
+                    \begin{align*}
+                        \E(S_n^2 | \theta) & = \sum\limits_{i=1}^n \E((X_i -
+                            \mu(\theta))^2 | \theta) - n \E((\overline X_n -
+                            \mu(\theta))^2 | \theta) \\
+                        & = n\sigma^2(\theta) - n\frac{\sigma^2(\theta)}{n} \\
+                        & = (n - 1)\sigma^2(\theta)
+                    \end{align*}
 
     \newpage
     \section*{Problems Classes}
