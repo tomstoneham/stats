@@ -218,6 +218,14 @@
                     \var(X) = \frac{\alpha}{\beta^2}
                 \]
 
+                We may scale a random variable $Y \sim \text{Gamma}(\alpha,
+                \beta)$ as follows:
+
+                \[
+                    aY \sim \text{Gamma}\left(\alpha, \frac{\beta}{\alpha}
+                    \right)
+                \]
+
             \paragraph{Lomax}
                 \[
                     X \sim \text{Lomax}(\alpha, \beta) \iff f(x) =
@@ -229,6 +237,36 @@
                 \]
                 \[
                     \var(X) = \frac{\alpha\beta^2}{(\alpha - 1)^2(\alpha - 2)}
+                \]
+
+            \paragraph{Chi-Square}
+                \[
+                    X \sim \chi^2(n) \iff X \sim \text{Gamma}\left(\frac{n}{2},
+                    \frac{1}{2}\right) \quad \fa n > 0
+                \]
+                \[
+                    \E(X) = n
+                \]
+                \[
+                    \var(X) = 2n
+                \]
+
+                If $X_i \sim \chi^2(n_i)$ are independent, then:
+
+                \[
+                    \sum_{i=1}^k X_i \sim \chi^2\left(\sum_{i=1}^k n_i\right)
+                \]
+
+                If $X \sim \mathcal{N}(0, 1)$ then:
+
+                \[
+                    X^2 \sim \chi^2(1)
+                \]
+
+                and if $X_i \sim \mathcal{N}(0, 1)$ are IID, then:
+
+                \[
+                    \sum_{i=1}^k X_i^2 \sim \chi^2(k)
                 \]
 
         \subsection*{Frequentist Approach}
@@ -2932,6 +2970,316 @@
                         & = n\sigma^2(\theta) - n\frac{\sigma^2(\theta)}{n} \\
                         & = (n - 1)\sigma^2(\theta)
                     \end{align*}
+
+    \newpage
+    \section{Sampling Distributions}
+        \subsection{Introduction}
+            \begin{fread}
+                [DS12, section 8.1]
+            \end{fread}
+
+            We may ask: prior to seeing the data in a sample, what can we say
+            about the statistical properties of an estimator $\widehat \Theta$
+            (which could be Bayesian, MLE, etc) for a parameter, either
+            conditionally on $\Theta = \theta$, or unconditionally?
+
+            \subsubsection{Examples: Depression Drug Trial}
+
+            Let's consider once again the example of depression treatment, where
+            we're considering how likely relapse is under different forms of
+            treatment. We modelled each patient as $X_i|\theta \sim
+            \text{Bernoulli}(\theta)$, where $\bb{P}(\text{patient relapses} |
+            \theta) = \theta$. We might take $\widehat \Theta$ to be the maximum
+            likelihood estimator $\sum\limits_{i=1}^n \frac{x_i}{n}$ as an
+            estimator for $\Theta$. How good is this estimator?
+
+            To know this, before we see any data, we could be interested in (for
+            example, in the \textit{frequentist approach}) $\bb{P}(|\widehat
+            \Theta - \theta| \leq 0.1 | \theta)$ for all $\theta \in [0, 1]$. If
+            this probability is small, this isn't good: it means the estimator
+            is further from the true value. If the probability is large, then we
+            are confident that the true value of $\theta$ will be ``close'' to
+            the actually observed value $\widehat \theta$.
+
+            In order to actually calculate this probability, we need the
+            distribution of $\widehat \Theta$ given $\Theta = \theta$.
+
+            If we take a \textit{Bayesian approach}, we'll have a prior on
+            $\Theta$, and might want to know:
+
+            \[
+                \bb{P}(|\widehat \Theta - \Theta| \leq 0.1) = \int_0^1 \bb{P}(|
+                \widehat \Theta - \theta| \leq 0.1 | \theta) \cdot f(\theta)
+                d\theta
+            \]
+
+            Once again, we need the distribution of $\widehat \Theta$
+            conditional on $\Theta = \theta$. In the case of the depression
+            treatment trial, we have $n\widehat \Theta | \theta \sim
+            \text{Bin}(n, \theta)$, so:
+
+            \[
+                p(\widehat \theta | \theta) = {n \choose {n\widehat \theta}}
+                \cdot \theta^{n\widehat \theta} \cdot (1 - \theta)^{n(1 -
+                \widehat \theta)}, \quad \widehat \theta = 0, \frac{1}{n},
+                \frac{2}{n}, ..., 1
+            \]
+
+            determines the distribution of $\widehat \Theta | \theta$.
+
+            \subsubsection{Definition}
+                \begin{definition}[Sampling Distribution]
+                    Let $T := t(X_1, X_2, ..., X_n, \Theta)$ be any function of
+                    the data and (optionally) the parameter. Then, the
+                    distribution of $T$, conditional on $\Theta = \theta$, is
+                    called the \textbf{sampling distribution} of $T$.
+                \end{definition}
+
+            \subsubsection{Example: Sample Mean and the CLT}
+                As another example, let's look at $X_1, ..., X_n$ IID
+                conditional on $\Theta$. By the central limit theorem, with:
+
+                \[
+                    \mu(\theta) := \E(X_i | \theta), \quad \sigma^2(\theta) :=
+                    \var(X_i | \theta) > 0
+                \]
+
+                then (approximately, for large values of $n$), we have the
+                sampling distribution for $\theta$, given by:
+
+                \[
+                    \overline X_n | \theta \sim \mathcal{N}\left(\mu(\theta),
+                    \frac{\sigma^2(\theta)}{n}\right)
+                \]
+
+                \begin{warn}
+                    Remember that this is \textit{approximation}: it won't hold
+                    for too small a value of $n$. For $n \geq 30$, for most
+                    distributions, this approximation works fairly well.
+                \end{warn}
+
+            \subsubsection{Example: Electrical Component Lifetimes}
+                Recall the example from section 3.4.1 of electrical component
+                lifetimes. We modelled lifetimes as $X_i | \theta \sim
+                \text{Exp}(\theta)$. Under a $\text{Gamma}(\alpha_0, \beta_0)$
+                prior for $\Theta$, we saw that $\Theta | x_1, ..., x_n \sim
+                \text{Gamma}(\alpha_n, \beta_n)$ with $\alpha_n := \alpha_0 + n,
+                \beta_n := \beta_0 + \sum\limits_{i=1}^n x_i$. Therefore,
+                $\E(\Theta | x_1, ..., x_n) = \frac{\alpha_0 + n}{\beta_0 +
+                \sum\limits_{i=1}^n x_i}$. A Bayes estimator is therefore given
+                by:
+
+                \[
+                    \widehat \Theta := \frac{\alpha_0 + n}{\beta_0 +
+                    \sum\limits_{i=1}^n x_i} = \frac{4}{2 + X_1 + X_2 + X_3}
+                \]
+
+                What can we say about the sampling distribution of $\widehat
+                \Theta$? Note the following useful fact: If $X_i | \theta \sim
+                \text{Exp}(\theta)$, then $\sum\limits_{i=1}^n X_i | \theta \sim
+                \text{Gamma}(n, \theta)$. So, for any $a > 0$:
+
+                \begin{align*}
+                    \bb{P}(\widehat \Theta \leq a | \theta) & = \bb{P}(4 \leq a
+                        (2 + X_1 + X_2 + X_3) | \theta) \\
+                    & = \bb{P}(\frac{4}{a} - 2 \leq X_1 + X_2 + X_3 | \theta) \\
+                    & = 1 - G\left(\frac{4}{a} - 2 | \theta\right)
+                \end{align*}
+
+                where $G$ is the CDF of the Gamma distribution, given here by:
+
+                \[
+                    G\left(\left.\frac{4}{a} - 2 \right| \theta\right) =
+                    \begin{cases}\exp\left(-\theta\left(\frac{4}{a} - 2\right)
+                    \right) \cdot \sum_{k=0}^2 \theta\left(\frac{4}{a} - 2
+                    \right)^k / k!, & 0 < a < 2 \\ 1, & a \geq 2\end{cases}
+                \]
+
+                We can then use this to find:
+
+                \begin{align*}
+                    \bb{P}(|\widehat \Theta - \theta| \leq 0.1 | \theta) & =
+                        \bb{P}(\widehat \Theta \leq \theta + 0.1 | \theta) -
+                        \bb{P}(\widehat \Theta \leq \theta - 0.1 | \theta) \\
+                    & = g(\theta) \\
+                    \implies \bb{P}(|\widehat \Theta - \theta| \leq 0.1) & =
+                        \int_0^\infty g(\theta) \cdot f(\theta) d\theta \\
+                    & \approx 0.478
+                \end{align*}
+
+                Let's also look at the maximum likelihood estimator:
+
+                \[
+                    \widehat \Theta := \frac{n}{\sum\limits_{i=1}^n X_i} =
+                    \frac{3}{X_1 + X_2 + X_3}
+                \]
+
+                Let's say we look at $\bb{P}\left(\left|\frac{\widehat \Theta}
+                {\theta} - 1\right| \leq 0.1 | \theta\right)$ (i.e: the relative
+                error instead of the absolute).
+
+                We begin with a useful fact: If we have $Y \sim
+                \text{Gamma}(\alpha, \beta)$, and we wish to rescale $Y$, then
+                we have:
+
+                \[
+                    aY \sim \text{Gamma}\left(\alpha, \frac{\beta}{a}\right),
+                    \quad \fa a > 0
+                \]
+
+                We have seen that $X_1 + X_2 + X_3 | \theta \sim \text{Gamma}(3,
+                \theta)$, and from the definition of $\widehat \Theta,
+                \frac{\theta}{\widehat \Theta} = \frac{\theta}{3}(X_1 + X_2 +
+                X_3)$. We can use these observations to write:
+
+                \[
+                    \frac{\theta}{\widehat \Theta} | \theta \sim \text{Gamma}(3,
+                    3)
+                \]
+
+                So the sampling distribution of $\frac{\widehat \Theta}{\theta}$
+                \textit{does not depend on $\theta$!} Any quantity or random
+                variable whose sampling distribution doesn't depend on the
+                parameter(s) is called a \textbf{pivotal quantity}. So:
+
+                \[
+                    \bb{P}\left(\left.\left|\frac{\widehat \Theta}{\theta} -
+                    1\right| \leq 0.1 \right| \theta\right) = \bb{P}\left(\left.
+                    \frac{\widehat\Theta}{\theta} \leq 1.1 \right| \theta\right)
+                    - \bb{P}\left(\left.\frac{\widehat\Theta}{\theta} \leq 0.9
+                    \right| \theta\right) \approx 0.134
+                \]
+
+                So the probability we wanted to find is 0.134, regardless of the
+                value of $\theta$. We may note that this is not a great
+                estimator.
+
+                Consequently, we also have that (regardless of the prior
+                distribution of $\Theta$):
+
+                \[
+                    \bb{P}\left(\left|\frac{\widehat \Theta}{\Theta} - 1\right|
+                    \leq 0.1\right) \approx 0.134
+                \]
+
+        \subsection{The Chi-Square Distribution}
+            \begin{fread}
+                [DS14, section 8.2]
+            \end{fread}
+
+            From the exercises, you should have shown that the maximum
+            likelihood estimator for $\sigma^2$ when $X_i | \sigma^2 \sim
+            \mathcal{N}(\mu, \sigma^2)$ (assuming that $\mu$ is known) is equal
+            to:
+
+            \[
+                \frac{1}{n} \sum_{i=1}^n (X_i - \mu)^2 = \frac{S_n^2(\mu)}{n}
+            \]
+
+            (since the sum itself here is the definition of $S_n^2$).
+
+            The sampling distribution of $\frac{S_n^2(\mu)}{\sigma^2}$ is a well
+            known object: it is a $\text{Gamma}(n/2, 1/2)$ distribution. Because
+            it comes up so often, we give it a special name.
+
+            \begin{definition}[Chi-Square Distribution]
+                For any $n > 0$ (where $n$ is typically an integer), we say that
+                $X$ has \textbf{Chi-Square Distribution}, with $n$ degrees of
+                freedom, and write:
+
+                \[
+                    X \sim \chi^2(n)
+                \]
+
+                if $X \sim \text{Gamma}(n/2, 1/2)$.
+
+                For this distribution, we have the following expressions, by the
+                corresponding definitions for the Gamma distribution:
+
+                \[
+                    \E(X) = \frac{n/2}{1/2} = n
+                \]
+                \[
+                    \var(X) = \frac{n/2}{(1/2)^2} = 2n
+                \]
+
+                The moment generating function is given by:
+
+                \[
+                    M_X(t) = \E(e^{tX}) = \left(\frac{1}{1 - 2t}\right)
+                    ^\frac{n}{2}, \quad -\frac{1}{2} < t < \frac{1}{2}
+                \]
+            \end{definition}
+
+            \subsubsection{Theorem: Sum of Chi-Square Distributions}
+                If $X_i \sim \chi^2(n_i)$ are independent, then:
+
+                \[
+                    \sum_{i=1}^k X_i \sim \chi^2\left(\sum_{i=1}^k n_i\right)
+                \]
+
+                \paragraph{Proof}
+                    By the properties of the moment generating functions, we
+                    know that:
+
+                    \[
+                        M_{\sum_{i=1}^k X_i} (t) = \prod_{i=1}^n M_{X_i}(t) =
+                        \left(\frac{1}{1 - 2t}\right)^{\sum_{i=1}^k n_i/2}
+                    \]
+
+                    which is the moment generating function of a $\chi^2
+                    \left(\sum\limits_{i=1}^k n_i\right)$ distribution.
+
+            \subsubsection{Theorem: Relation Between Normal and Chi-Square}
+                If $X \sim \mathcal{N}(0, 1)$, then $X^2 \sim \chi^2(1)$.
+
+                \paragraph{Proof}
+                    Let $Y := X^2$. Then, for any $y \geq 0$:
+
+                    \begin{align*}
+                        F_Y(y) & = \bb{P}(Y \leq y) \\
+                        & = \bb{P}(-\sqrt{y} \leq X \leq \sqrt{y}) \\
+                        & = \Phi(\sqrt{y}) - \Phi(-\sqrt{y})
+                    \end{align*}
+
+                    Note that $\frac{d}{dy}\sqrt{y} = \frac{1}{2\sqrt{y}}$, and
+                    $\frac{d}{dz}\Phi(z) = \phi(z) = \frac{1}{\sqrt{2\pi}} \exp
+                    \left(-\frac{1}{2}z^2\right)$. Therefore:
+
+                    \begin{align*}
+                        f_Y(y) & = \frac{d}{dy}\left(F_Y(y)\right) \\
+                        & = \frac{1}{2\sqrt{y}} \phi(\sqrt{y}) +
+                            \frac{1}{2\sqrt{y}} (\phi(-\sqrt{y})) \\
+                        & = \frac{\phi(\sqrt{y})}{\sqrt{y}} \\
+                        & \propind{y} y^{-\frac{1}{2}}e^{-\frac{1}{2}y}
+                    \end{align*}
+
+                    Recall that if $Z \sim \text{Gamma}(\alpha, \beta)$, then
+                    $f(z) \propind{z} z^{\alpha - 1}e^{-\beta z}$ so this final
+                    answer is the density of $\text{Gamma}(1/2, 1/2) =
+                    \chi^2(1)$.
+
+            \subsubsection{Theorem: Further Relations to Normal}
+                If $X_i \sim \mathcal{N}(0, 1)$ are IID, then $\sum\limits_{i=1}
+                ^k X_i^2 \sim \chi^2(k)$.
+
+                \paragraph{Proof}
+                    Simply combine the previous two theorems.
+
+            \subsubsection{Theorem:}
+                If $X_i | \sigma^2 \sim \mathcal{N}(\mu, \sigma^2)$ are IID
+                conditional on $\sigma^2$, with a known value of $\mu$, then:
+
+                \[
+                    \frac{S_n^2(\mu)}{\sigma^2} | \sigma^2 \sim \chi^2(n)
+                \]
+
+                \paragraph{Proof}
+                    Note that $\frac{S_n^2(\mu)}{\sigma^2} = \frac{1}{\sigma^2}
+                    \sum\limits_{i=1}^n (X_i - \mu)^2 = \sum\limits_{i=1}^n
+                    \left(\frac{X_i - \mu}{\sigma}\right)^2$. Now note that
+                    $\frac{X_i - \mu}{\sigma} \sim \mathcal{N}(0, 1)$ and use
+                    the previous theorem for the proof.
 
     \newpage
     \section*{Problems Classes}
