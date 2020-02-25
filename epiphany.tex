@@ -3458,4 +3458,157 @@
                     \text{Gamma}(7, 13)
                 \]
 
+        \subsection*{21-Feb-2020}
+        \addcontentsline{toc}{subsection}{\protect\numberline{}21-Feb-2020}
+            \paragraph{38}
+            \textit{In a clincal trial, let the probability of successful
+            outcome $\Theta$ have a prior distribution that is the uniform
+            distribution on the interval $[0, 1]$, which is also the beta
+            distribution with parameters $1$ and $1$. Suppose that the first
+            patient has a successful outcome. Find the Bayes estimate of
+            $\Theta$ under squared error loss.}
+
+                We have the prior $\Theta \sim \mathcal{U}(0, 1) =
+                \text{Beta}(1, 1)$, and the sampling $X_i | \theta \sim
+                \text{Bernoulli}(\theta)$. We have $n = 1, x_1 = 1$. From
+                lectures, we have $\widehat \theta = \E(\Theta | x_1, ...,
+                x_n)$, so the question is actually just asking us to find the
+                posterior expectation under squared error loss.
+
+                By conjugacy, we have $\Theta | x_1 \sim \text{Beta}(1 + 1, 1 +
+                1 - 1) = \text{Beta}(2, 1)$, since $\alpha_1 = \alpha_0 + x_1,
+                \beta_1 = \beta_0 + n - x_1$.
+
+                By the properties of the beta distribution, we have:
+
+                \[
+                    \E(\Theta | x_1) = \frac{\alpha_1}{\alpha_1 + \beta_1} =
+                    \frac{2}{3}
+                \]
+
+            \paragraph{41}
+            \textit{A random sample of size $n$ is taken from the Bernoulli
+            distribution with parameter $\theta$, which is unknown. The prior
+            distribution for $\theta$ is a beta distribution for which the mean
+            is $\mu_0$. Show that the mean of the posterior expectation of
+            $\Theta$ will be a weighted average of the form $\gamma_n \overline
+            x_n + (1 - \gamma_n)\mu_0$, and show that $\gamma_n \to 1$ as $n \to
+            \infty$.}
+
+                We have sampling $X_i | \theta \sim \text{Bernoulli}(\theta)$,
+                with prior $\Theta \sim \text{Beta}(\alpha_0, \beta_0)$.
+                Therefore, $\E(\Theta) = \frac{\alpha_0}{\alpha_0 + \beta_0} =
+                \mu_0$.
+
+                By conjugacy, we have:
+
+                \begin{align*}
+                    \E(\Theta | x_1, ..., x_n) & = \frac{\alpha_n}{\alpha_n +
+                        \beta_n} \\
+                    & = \frac{\alpha_0 + \sum\limits_{i=1}^n x_i} {\alpha_0 +
+                        \beta_0 + n} \\
+                    & = \frac{\alpha_0}{\alpha_0 + \beta_0 + n} + \frac{n}
+                        {\alpha_0 + \beta_0 + n}\overline x_n
+                \end{align*}
+
+                Is the denominator $\alpha_0 + \beta_0 + n$ equal to $\gamma_n$?
+                Yes, if the first fraction $\frac{\alpha_0}{\alpha_0 + \beta_0 +
+                n}$ is equal to $(1 - \gamma_n)\mu_0$.
+
+                We can check this:
+
+                \begin{align*}
+                    (1 - \gamma_n)\mu_0 & = \frac{\alpha_0 + \beta_0}{\alpha_0 +
+                        \beta_0 + n} \cdot \frac{\alpha_0}{\alpha_0 + \beta_0}\\
+                    & = \frac{\alpha_0}{\alpha_0 + \beta_0 + n}
+                \end{align*}
+
+                So yes, we've demonstrated that this is a weighted average.
+
+            \paragraph{49}
+            \textit{It is not known what proportion $\Theta$ of the purchases of
+            a certain brand of breakfast cereal are made by women, and what
+            proportion are made by men. In a random sample of 70 purchases of
+            this cereal, it was found that 58 were made by women and 12 were
+            made by men.}
+
+            \textit{(a) Find the maximum likelihood estimator of $\Theta$.}
+
+                We are doing Bernoulli sampling. Let $X_i$ equal $1$ if female,
+                $0$ if male. Then $X_i | \theta \sim \text{Bernoulli}(\theta)$.
+
+                For this sampling, the MLE is therefore $\widehat \theta =
+                \frac{\sum\limits_{i=1}^n x_i}{n} \approx 0.83$.
+
+            \textit{(b) Now suppose that it is additionally known that
+            $\frac{1}{2} \leq \Theta \leq \frac{2}{3}$. What is now the maximum
+            likelihood likelihood estimator of $\Theta$? (Hint: When is
+            $L'(\theta) > 0$?)}
+
+                Let's answer the hint first, since if we want to maximise this
+                function, we just need to maximise the log likelihood.
+
+                \[
+                    L(\theta) = y\log\theta + (n - y)\log(1 - \theta), \quad y =
+                    \sum_{i=1}^n x_i
+                \]
+                \begin{align*}
+                    & L'(\theta) > 0 \\
+                    \iff & \frac{y}{\theta} - \frac{n - y}{1 - \theta} > 0 \\
+                    \iff & (1 - \theta)y - \theta(n - y) > 0 \\
+                    \iff & y - n\theta > 0 \\
+                    \iff & \theta < \frac{y}{n} = \frac{58}{70} \approx 0.83
+                \end{align*}
+
+                So the maximum of the log likelihood $L(\theta)$ over
+                $\left[\frac{1}{2}, \frac{2}{3}\right]$ is achieved at $\widehat
+                \theta = \frac{2}{3}$ (as the gradient is always positive, so
+                the function is strictly increasing).
+
+            \paragraph{50}
+            \textit{Suppose that $X_1, ..., X_n$ form a random sample from a
+            Poisson distribution for which the mean $\theta$ is unknown, with
+            $\theta > 0$.}
+
+            \textit{(a) Determine the maximum likelihood estimate of $\Theta$,
+            assuming that at least one of the oserved values is different from
+            $0$.}
+
+                We have sampling given by $X_i | \theta \sim \text{Po}(\theta)$,
+                so $p(x_i | \theta) = \theta^{x_i} \frac{e^{-\theta}}{x_i!}$,
+                and $\log{p}(x_i | \theta) = x_i\log{\theta}- \theta -
+                \log(x_i!)$. So:
+
+                \begin{align*}
+                    L(\theta) & = \log p(x_1, ..., x_n | \theta) \\
+                    & = \log\prod_{i=1}^n p(x_i | \theta) \\
+                    & = \sum_{i=1}^n \log p(x_i | \theta) \\
+                    & = \sum_{i=1}^n (x_i\log\theta - \theta - \log(x_i!)) \\
+                    & = \log\theta \sum_{i=1}^n x_i - n\theta - D
+                \end{align*}
+
+                where $D$ is a constant that doesn't depend on $\theta$.
+
+                Therefore:
+
+                \[
+                    L'(\theta) = \frac{\sum\limits_{i=1}^n x_i}{\theta} - n =
+                    \frac{n\overline x_n}{\theta} - n
+                \]
+                \[
+                    L''(\theta) = -\frac{n\overline x_n}{\theta^2}
+                \]
+
+                So $L'(\widehat \theta) = 0$ when $\widehat \theta = \overline
+                x_n$, provided $x_n > 0$ (so when at least one $x_i > 0$).
+                Further $L''(\overline \theta) < 0$, so it is a maximum.
+
+            \textit{(b) Show that the maximum likelihood estimate of $\Theta$
+            does not exist if every observed value is $0$.}
+
+                If all $x_i = 0$, then $\overline x_n = 0$, and $L'(\theta) = -n
+                < 0$. This achieves a maximum near $\theta = 0$, but for $\theta
+                = 0, \text{Po}(\theta)$ is not a valid distribution, as
+                $\widehat \theta$ does not exist in this case!
+
 \end{document}
