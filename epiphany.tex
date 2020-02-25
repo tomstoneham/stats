@@ -140,6 +140,10 @@
                     \end{tabular}
                 \end{center}
 
+        \newpage
+        \subsection*{Quantiles for Chi-Square}
+        \input{./quant.tex}
+
         \subsection*{Distributions}
         \addcontentsline{toc}{subsection}{\protect\numberline{}Distributions}
             \paragraph{Binomial}
@@ -3274,12 +3278,180 @@
                     \frac{S_n^2(\mu)}{\sigma^2} | \sigma^2 \sim \chi^2(n)
                 \]
 
+                A consequence of this theorem is as follows:
+
+                \[
+                    \E\left(\frac{S_n^2(\mu)}{n}\right) = \sigma^2
+                \]
+
+                Or, in other words, $S_n^2(\mu)$ is an unbiased estimator for
+                $\sigma^2$.
+
                 \paragraph{Proof}
                     Note that $\frac{S_n^2(\mu)}{\sigma^2} = \frac{1}{\sigma^2}
                     \sum\limits_{i=1}^n (X_i - \mu)^2 = \sum\limits_{i=1}^n
                     \left(\frac{X_i - \mu}{\sigma}\right)^2$. Now note that
                     $\frac{X_i - \mu}{\sigma} \sim \mathcal{N}(0, 1)$ and use
                     the previous theorem for the proof.
+
+        \subsection{Joint Sampling Distribution of Sample Mean and Sample
+        Variance}
+            \begin{fread}
+                [DS12, section 8.3]
+            \end{fread}
+
+            At the start of term, we constructed confidence intervals of the
+            form $\overline x_n \pm a\sigma$, which has the property that:
+
+            \[
+                \bb{P}(\overline X_n - a\sigma \leq \theta \leq \overline X_n +
+                a\sigma | \theta) = 1 - \alpha
+            \]
+
+            for a specified value of $\alpha \in [0, 1], a =
+            \frac{z_{\alpha/2}}{\sqrt{n}}$.
+
+            In order to do this, we assumed $X_i | \theta \sim
+            \mathcal{N}(\theta, \sigma^2)$ are IID conditional on $\Theta$, and
+            $\sigma^2$ was known. However, knowing the standard deviation is
+            \textit{highly} unrealistic in practise. Instead, we may wish to
+            make statements about intervals of the form $\overline X_n \pm a
+            \sqrt\frac{S_n^2}{n - 1}$ (recall that we just demonstrated
+            $\frac{S_n^2}{n}$ is an unbiased estimator for $\sigma^2$). To do
+            this, we need the \textit{joint} distribution of $\overline X_n$ and
+            $S_n^2$.
+
+            \subsubsection{Theorem: Independence of Sample Mean and Variance for
+            Normal Sampling}
+                If $X_i | \mu, \sigma^2 \sim \mathcal{N}(\mu, \sigma^2)$ are IID
+                conditional on the random variables $\mu, \sigma^2$ (n.b: in our
+                capital notation for random variables, we should write the RVs
+                as $M, \Sigma^2$, but no-one does this), then $\overline X_n |
+                \mu, \sigma^2 \sim \mathcal{N}(\mu, \frac{\sigma^2}{n})$ with
+                $\overline X_n := \frac{1}{n}\sum\limits_{i=1}^n X_i$. Further:
+
+                \[
+                    \frac{S_n^2}{\sigma^2} | \mu, \sigma \sim \chi^2(n - 1),
+                    \quad S_n^2 := \sum_{i=1}^n (X_i - \overline X_n)^2
+                \]
+
+                \begin{warn}
+                    Take note especially of the fact that the parameter here
+                    is $n - 1$, not $n$: Using the sample mean rather than $\mu$
+                    means we lose a degree of freedom.
+                \end{warn}
+
+                Then, $\overline X_n$ and $S_n^2$ are i\textit{independent
+                conditional on $\mu$ and $\sigma^2$}! This is kind of intuitive:
+                learning about the mean tells us nothing about the variance, and
+                vice-versa.
+
+                \paragraph{Proof}
+                    The main trick used in this proof is non-obvious: We
+                    transform the initial variables $X_1, ..., X_n$ as follows.
+
+                    \[
+                        B := \begin{bmatrix}1 & -1 & 0 & 0 & \dots & 0 \\
+                            1 & 1 & -2 & 0 & \dots & 0 \\
+                            1 & 1 & 1 & -3 & \dots & 0 \\
+                            \vdots & \vdots & \vdots & \vdots & \vdots &
+                                \vdots \\
+                            1 & 1 & 1 & 1 & \dots & -n + 1 \\
+                            1 & 1 & 1 & 1 & \dots & 1
+                        \end{bmatrix}
+                    \]
+
+                    So the entries of each row of $B$, other than the final one,
+                    will sum to $0$.
+
+                    Let $B_i$ denote the $i$th row of $B$. Note that the inner
+                    product of two rows is:
+
+                    \[
+                        B_iB_j^T = \begin{cases}
+                            0, & i \neq j \\
+                            i + i^2, & i = j < n \\
+                            n, & i = j = n
+                        \end{cases}
+                    \]
+
+                    Therefore, two distinct rows are orthogonal. We will now
+                    further demonstrate they are \textit{orthonormal}. Define
+                    $A_i := \frac{B_i}{\sqrt{B_iB_i^T}}$, and form the matrix:
+
+                    \[
+                        A := \begin{bmatrix}A_1 \\ A_2 \\ \vdots \\ A_n
+                        \end{bmatrix}
+                    \]
+
+                    Then:
+
+                    \[
+                        A_iA_j^T = \begin{cases}0, & i \neq j \\ 1, & i = j
+                        \end{cases}
+                    \]
+
+                    So $AA^T = I$, and $A$ is therefore called
+                    \textbf{orthonormal}. Orthonormal matrices are interesting
+                    because they correspond to a change in basis representing
+                    a rotation.
+
+                    Define $Z_i := \frac{X_i - \mu}{\sigma}$, and note that $Z_i
+                    | \mu, \sigma^2 \sim \mathcal{N}(0, 1)$ are IID conditional
+                    on $\mu, \sigma^2$. Define:
+
+                    \[
+                        \begin{bmatrix}Y_1 \\ Y_2 \\ \vdots \\ Y_n\end{bmatrix}
+                        := A\begin{bmatrix}Z_1 \\ Z_2 \\ \vdots Z_n\end{bmatrix}
+                    \]
+
+                    Now note the following facts:
+
+                    \begin{enumerate}
+                        \item
+                            \begin{align*}
+                                \sum_{i=1}^n Y_i^2 & = Y^TY \\
+                                & = (Z^TA^T)(AZ) \\
+                                & = Z^T(A^TA)Z \\
+                                & = Z^TZ \\
+                                & = \sum_{i=1}^n Z_i^2
+                            \end{align*}
+
+                        \item The joint density of the $Z_i$ is given by:
+
+                            \[
+                                \prod_{i=1}^n \frac{1}{\sqrt{2\pi}} e^{-z_i^2/2}
+                                \propind{z} \exp\left(-\frac{1}{2} \sum_{i=1}^n
+                                z_i^2\right)
+                            \]
+
+                            This is invariant under rotation, as it is only a
+                            function of the distance to the origin. Therefore,
+                            $z \mapsto y = Az$ is a rotation, and the joint
+                            density of the $Y_i$ is:
+
+                            \[
+                                \propind{y} \exp\left(-\frac{1}{2} \sum_{i=1}^n
+                                y_i^2\right)
+                            \]
+
+                            So the $Y_i | \mu, \sigma^2 \sim \mathcal{N}(0, 1)$
+                            are IID conditional on $\mu, \sigma^2$
+
+                        \item
+                            \begin{align*}
+                                Y_n & = \sum_{i=1}^n \frac{Z_i}{n} \\
+                                & = \sqrt{n}\overline Z_n \\
+                                & = \frac{\overline X_n - \mu}{\sigma/\sqrt{n}}
+                            \end{align*}
+
+                            So:
+
+                            \[
+                                \overline X_n | \mu, \sigma^2 \sim
+                                \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right)
+                            \]
+                    \end{enumerate}
 
     \newpage
     \section*{Problems Classes}
