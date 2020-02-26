@@ -3,7 +3,8 @@
 # Pretty ugly really but who cares
 from scipy.stats import chi2
 
-buf = """
+buf = """\\setlength{\\tabcolsep}{3pt}
+\\renewcommand{\\arraystretch}{1}
 \\begin{center}
 \\begin{tabular}{c | c c c c c c c c c c c c}
 $n$"""
@@ -16,14 +17,16 @@ for quant in quantiles:
 
 buf += " \\\\\n\hline\n"
 
-for i in range(1, 31) + range(35, 60, 5) + range(60, 101, 10):
+for i in range(1, 31) + range(32, 40, 2) + range(42, 50, 4) + range(50, 101, 5):
     buf += str(i)
     for quant in quantiles:
         buf += " & {:.2f}".format(chi2.ppf(quant, i), 2)
     buf += " \\\\\n"
 
 buf += """\\end{tabular}
-\\end{center}"""
+\\end{center}
+\\renewcommand{\\arraystretch}{1.5}
+\\setlength{\\tabcolsep}{5pt}"""
 
 with open('quant.tex', 'w') as f:
     f.write(buf)
