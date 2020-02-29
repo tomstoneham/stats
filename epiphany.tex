@@ -132,7 +132,10 @@
         \subsection*{Tables of Values}
         \addcontentsline{toc}{subsection}{\protect\numberline{}Tables of Values}
             \paragraph{Quantiles for Chi-Square:}
-            \input{./quant.tex}
+            \input{./quant-chi2.tex}
+
+            \paragraph{Quantiles for t Distribution:}
+            \input{./quant-t.tex}
 
             \paragraph{Common Inverse Normal Values:}
                 \begin{center}
@@ -225,7 +228,7 @@
                 \beta)$ as follows:
 
                 \[
-                    aY \sim \text{Gamma}\left(\alpha, \frac{\beta}{\alpha}
+                    aY \sim \text{Gamma}\left(\alpha, \frac{\beta}{a}
                     \right)
                 \]
 
@@ -270,6 +273,24 @@
 
                 \[
                     \sum_{i=1}^k X_i^2 \sim \chi^2(k)
+                \]
+
+            \paragraph{t Distribution}
+                \[
+                    X \sim t(n) \iff X = \frac{Y}{\sqrt{Z}{n}} \text{ where }
+                    Y \sim \mathcal{N}(0, 1), Z \sim \chi^2(n)
+                \]
+                \[
+                    \E(X) = 0, \quad n > 1
+                \]
+                \[
+                    \var(X) = \frac{n}{n - 2}, \quad n > 2
+                \]
+                \[
+                    f(x) \propind{x} \left(1 + \frac{x^2}{n}\right)^{-(n + 1)/2}
+                \]
+                \[
+                    \lim_{n \to \infty} t(n) = \mathcal{N}(0, 1)
                 \]
 
         \subsection*{Frequentist Approach}
@@ -324,6 +345,8 @@
                     \left[\overline x_n - z_{\alpha/2}\frac{\sigma}{\sqrt{n}},
                     \overline x_n + z_{\alpha/2} \frac{\sigma}{\sqrt{n}}\right]
                 \]
+
+                (when variance is known).
 
             \paragraph{Frequentist Prediction Interval}
                 Assuming that $X_1, ..., X_n$ are IID conditional on $\theta$
@@ -625,6 +648,18 @@
                 \]
                 \[
                     \widehat {\sigma^2{\theta}} = \frac{S_n^2}{n - 1}
+                \]
+
+        \subsection*{Confidence Intervals}
+        \addcontentsline{toc}{subsection}{\protect\numberline{}Confidence
+        Intervals}
+            \paragraph{Confidence Intervals for Mean for Normal Sampling with
+            Unknown Parameters}
+                \[
+                    \bb{P}\left(\left.\overline X_n - z_{\alpha/2}^{(n-1)}
+                    \sqrt{\frac{S_n^2}{n - 1}} / \sqrt{n} \leq \mu \leq
+                    \overline X_n + z_{\alpha/2}^{(n - 1)} \sqrt{\frac{S_n^2}
+                    {n - 1}} /\sqrt{n} \right| \mu, \sigma^2\right) = 1 - \alpha
                 \]
 
     \newpage
@@ -3299,8 +3334,8 @@
                 [DS12, section 8.3]
             \end{fread}
 
-            At the start of term, we constructed confidence intervals of the
-            form $\overline x_n \pm a\sigma$, which has the property that:
+            At the start of the course, we constructed confidence intervals of
+            the form $\overline x_n \pm a\sigma$, which has the property that:
 
             \[
                 \bb{P}(\overline X_n - a\sigma \leq \theta \leq \overline X_n +
@@ -3308,26 +3343,32 @@
             \]
 
             for a specified value of $\alpha \in [0, 1], a =
-            \frac{z_{\alpha/2}}{\sqrt{n}}$.
+            \frac{z_{\alpha/2}}{\sqrt{n}} > 0$.
 
             In order to do this, we assumed $X_i | \theta \sim
             \mathcal{N}(\theta, \sigma^2)$ are IID conditional on $\Theta$, and
             $\sigma^2$ was known. However, knowing the standard deviation is
-            \textit{highly} unrealistic in practise. Instead, we may wish to
+            \textit{highly} unrealistic in practice. Instead, we may wish to
             make statements about intervals of the form $\overline X_n \pm a
             \sqrt\frac{S_n^2}{n - 1}$ (recall that we just demonstrated
             $\frac{S_n^2}{n}$ is an unbiased estimator for $\sigma^2$). To do
-            this, we need the \textit{joint} distribution of $\overline X_n$ and
-            $S_n^2$.
+            this, we need the \textit{joint} sampling distribution of $\overline
+            X_n$ and $S_n^2$.
 
             \subsubsection{Theorem: Independence of Sample Mean and Variance for
             Normal Sampling}
                 If $X_i | \mu, \sigma^2 \sim \mathcal{N}(\mu, \sigma^2)$ are IID
                 conditional on the random variables $\mu, \sigma^2$ (n.b: in our
                 capital notation for random variables, we should write the RVs
-                as $M, \Sigma^2$, but no-one does this), then $\overline X_n |
-                \mu, \sigma^2 \sim \mathcal{N}(\mu, \frac{\sigma^2}{n})$ with
-                $\overline X_n := \frac{1}{n}\sum\limits_{i=1}^n X_i$. Further:
+                as $M, \Sigma^2$, but no-one does this), then:
+
+                \[
+                    \overline X_n | \mu, \sigma^2 \sim \mathcal{N}(\mu,
+                    \frac{\sigma^2}{n}), \quad \overline X_n := \frac{1}{n}
+                    \sum_{i=1}^n X_i
+                \]
+
+                Further:
 
                 \[
                     \frac{S_n^2}{\sigma^2} | \mu, \sigma \sim \chi^2(n - 1),
@@ -3340,7 +3381,7 @@
                     means we lose a degree of freedom.
                 \end{warn}
 
-                Then, $\overline X_n$ and $S_n^2$ are i\textit{independent
+                Then, $\overline X_n$ and $S_n^2$ are \textit{independent
                 conditional on $\mu$ and $\sigma^2$}! This is kind of intuitive:
                 learning about the mean tells us nothing about the variance, and
                 vice-versa.
@@ -3353,7 +3394,7 @@
                         B := \begin{bmatrix}1 & -1 & 0 & 0 & \dots & 0 \\
                             1 & 1 & -2 & 0 & \dots & 0 \\
                             1 & 1 & 1 & -3 & \dots & 0 \\
-                            \vdots & \vdots & \vdots & \vdots & \vdots &
+                            \vdots & \vdots & \vdots & \vdots & \ddots &
                                 \vdots \\
                             1 & 1 & 1 & 1 & \dots & -n + 1 \\
                             1 & 1 & 1 & 1 & \dots & 1
@@ -3439,8 +3480,8 @@
 
                         \item
                             \begin{align*}
-                                Y_n & = \sum_{i=1}^n \frac{Z_i}{n} \\
-                                & = \sqrt{n}\overline Z_n \\
+                                Y_n & = \sum_{i=1}^n \frac{Z_i}{\sqrt{n}} \\
+                                & = \sqrt{n}\,\overline Z_n \\
                                 & = \frac{\overline X_n - \mu}{\sigma/\sqrt{n}}
                             \end{align*}
 
@@ -3450,7 +3491,242 @@
                                 \overline X_n | \mu, \sigma^2 \sim
                                 \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right)
                             \]
+
+                        \item
+                            \begin{align*}
+                                \sum_{i=1}^{n-1} Y_i^2 & = \sum_{i=1}^n Y_i^2 -
+                                    n \overline Z_n^2 \\
+                                & = \left(\sum_{i=1}^n Z_i^2\right) - n\overline
+                                    Z_n^2 & \textit{(by (1))} \\
+                                & = \left(\sum_{i=1}^n Z_i^2\right) + n\overline
+                                    Z_n^2 - 2\overline Z_n \left(\sum_{i=1}^n
+                                    Z_i\right) \\
+                                & = \sum_{i=1}^n \left(Z_i - \overline Z_n
+                                    \right)^2 \\
+                                & = \frac{S_n^2}{\sigma^2}
+                            \end{align*}
+
+                            So $\left.\frac{S_n^2}{\sigma^2}\right| \mu,
+                            \sigma^2 \sim \chi^2(n - 1)$, and is independent of
+                            $Y_n = \frac{\overline X_n - \mu}{\sigma /
+                            \sqrt{\mu}}$.
                     \end{enumerate}
+
+                    Consequently, $S_n^2$ and $\overline X_n$ are \textit{also
+                    independent}, conditional on $\mu, \sigma^2$.
+
+            \subsubsection{Example}
+                \textit{For what sample size can we guarantee that:}
+
+                \[
+                    \bb{P}\left(i\left.\left|\overline X_n - \mu\right| \leq
+                    \frac{1}{5}\sigma \text{ and } \left|\frac{S_n}{\sqrt{n}} -
+                    \sigma\right| \leq \frac{1}{5}\sigma\right|\mu, \sigma^2
+                    \right) \geq \frac{1}{2}
+                \]
+
+                \textit{for all $\mu, \sigma$?}
+
+                By independence of $\overline X_n$ and $S_n^2$, we need that:
+
+                \[
+                    \bb{P}\left(\left.|\overline X_n - \mu| \leq \frac{1}{5}
+                    \sigma \right| \mu, \sigma^2\right)\bb{P}\left(\left.\left|
+                    \frac{S_n}{\sqrt{n}} - \sigma\right| \leq \frac{1}{5}\sigma
+                    \right|\mu, \sigma^2\right) \geq \frac{1}{2}
+                \]
+
+                Let's consider these two probabilities individually:
+
+                \begin{align*}
+                    \bb{P}\left(\left.|\overline X_n - \mu| \leq \frac{1}{5}
+                        \sigma \right| \mu, \sigma^2\right) & = \bb{P}
+                        \left(\left.\left|\frac{\overline X_n - \mu}
+                        {\sigma/\sqrt{n}}\right| \leq \frac{\sqrt{n}}{5}\right|
+                        \mu, \sigma^2\right) \\
+                    & = \Phi\left(\frac{\sqrt{n}}{5}\right) - \Phi\left(-
+                        \frac{\sqrt{n}}{5}\right)
+                \end{align*}
+
+                \begin{align*}
+                    \bb{P}\left(\left.\left|\frac{S_n}{\sqrt{n}} - \sigma\right|
+                        \leq \frac{1}{5}\sigma\right|\mu, \sigma^2\right) & =
+                        \bb{P}\left(\left.-\frac{1}{5} \leq
+                        \frac{S_n}{\sigma\sqrt{n}} - 1 \leq \frac{1}{5}
+                        \right|\mu, \sigma^2\right) \\
+                    & = \bb{P}\left(\left.0.8\sqrt{n} \leq \frac{S_n}{\sigma}
+                        \leq 1.2\sqrt{n}\right|\mu, \sigma^2\right) \\
+                    & = \bb{P}\left(\left.0.64n \leq \frac{S_n^2}{\sigma^2} \leq
+                        1.44n\right|\mu, \sigma^2\right)
+                \end{align*}
+
+                Take note that we know $\frac{S_n^2}{\sigma^2} \sim \chi^2(n -
+                1)$, so we can write the following, where $G_{n-1}$ is the CDF
+                of this $\chi^2(n - 1)$ distribution:
+
+                \[
+                    \bb{P}\left(\left.\left|\frac{S_n}{\sqrt{n}} - \sigma\right|
+                    \leq \frac{1}{5}\sigma\right|\mu, \sigma^2\right) =
+                    G_{n-1}(1.44n) - G_{n-1}(0.64n)
+                \]
+
+                By testing some values, we find that the inequality is satisfied
+                for $n = 21$.
+
+        \subsection{The t Distribution}
+            Recall that we would like to find $a > 0$ such that:
+
+            \[
+                \bb{P}(\overline X_n - a S_n \leq \mu \leq \overline X_n + aS_n|
+                \mu, \sigma^2) = 1 - \alpha, \quad \alpha \in [0, 1]
+            \]
+
+            To find such an $a$, we need the sampling distribution of
+            $\frac{\overline X_n - \mu}{S_n/} = \frac{(\overline X_n -
+            \mu)/\sigma}{S_n/\sigma}$, which is the ratio of a standard normal
+            and the square root of a chi square.
+
+            \begin{definition}[The t Distribution]
+                Consider $Y \sim \mathcal{N}(0, 1)$ and $Z \sim \chi^2(n)$. Then
+                the distribution of $X := \frac{Y}{\sqrt{Z/n}}$ is called the
+                \textbf{t distribution with $n$ degrees of freedom}, written as
+                $X \sim t(n)$.
+
+                For this distribution, we have the following expressions:
+
+                \[
+                    \E(X) = 0, \quad n > 1
+                \]
+                \[
+                    \var(X) = \frac{n}{n - 2}, \quad  n > 2
+                \]
+
+                Also, as $n \to \infty$, we have $X \sim \mathcal{N}(0, 1)$ by
+                the central limit theorem.
+
+                The pdf of a t distribution is given by:
+
+                \[
+                    f(x) \propind{x} \left(1 + \frac{x^2}{n}\right)
+                    ^{-(n + 1)/2}
+                \]
+            \end{definition}
+
+            \subsubsection{Theorem}
+                If $X_i | \mu, \sigma^2 \sim \mathcal{N}(\mu, \sigma^2)$ are IID
+                conditional on $\mu, \sigma^2$, then:
+
+                \[
+                    \frac{\overline X_n - \mu}{\sqrt{\frac{S_n^2}{n -
+                    1}}/\sqrt{n}} \sim t(n - 1)
+                \]
+
+                \paragraph{Proof}
+                    Take $Y := \left.\frac{\overline X_n - \mu}{\sigma /
+                    \sqrt{n}} \right | \mu, \sigma^2 \sim \mathcal{N}(0, 1)$,
+                    and $Z := \left. \frac{S_n^2}{\sigma^2} \right| \mu, r^2
+                    \sim \chi^2(n - 1)$. Then:
+
+                    \begin{align*}
+                        \frac{Y}{\sqrt{Z/(n-1)}} & = \frac{\overline X_n -
+                            \mu}{\sigma/\sqrt{n}} \cdot
+                            \sqrt{\frac{\sigma^2(n-1)2}{S_n^2}} \\
+                        & = \frac{\overline X_n - \mu}{\sqrt{\frac{S_n^2}{n -
+                            1}}/\sqrt{n}} \sim t(n - 1) \\
+                        & \sim t(n - 1) & \textit{(by definition)}
+                    \end{align*}
+
+    \newpage
+    \section{Confidence Intervals}
+        \subsection{Confidence Intervals for Mean for Normal Sampling with
+        Unknown Mean and Unknown Variance}
+            Assume $X_i | \mu, \sigma^2 \sim \mathcal{N}(\mu, \sigma^2)$ with
+            $\theta = (\mu, \sigma^2)$ unknown, and the $X_i$ IID conditional on
+            $\Theta$.
+
+            We will now define a pivotal quantity, $U_n := \frac{\overline X_n -
+            \mu}{\sqrt{S_n^2/(n-1)} / \sqrt{n}}$. Then $U_n | \theta \sim
+            t(n-1)$.
+
+            Fix any $\alpha \in [0, 1]$, and let $z_{\alpha/2}^{(n - 1)} =
+            F_{t(n-1)}^{-1} \left(1 - \frac{\alpha}{2}\right)$, where
+            $F_{t(n-1)}$ is the CDF of $t(n-1)$.
+
+            \incfig{./tdist.pdf_tex}
+
+            Then $\bb{P}(|U_n| \leq z_{\alpha/2}^{(n-1)} | \mu, \sigma^2) = 1 -
+            \alpha$ (this is clear from the figure above). So by the definition
+            of $U_n$, we have:
+
+            \[
+                \bb{P}\left(\left.|\overline X_n - \mu| \leq z_{\alpha/2}
+                ^{(n-1)}\sqrt{\frac{S_n^2}{n-1}} / \sqrt{n} \right| \mu,
+                \sigma^2\right) = 1 - \alpha
+            \]
+
+            So, we have:
+
+            \[
+                \bb{P}\left(\left.\overline X_n - z_{\alpha/2}^{(n-1)}
+                \sqrt{\frac{S_n^2}{n - 1}} / \sqrt{n} \leq \mu \leq \overline
+                X_n + z_{\alpha/2}^{(n - 1)} \sqrt{\frac{S_n^2}{n - 1}} /
+                \sqrt{n} \right| \mu, \sigma^2\right) = 1 - \alpha
+            \]
+
+            Compare this with our previous confidence interval when $\sigma^2$
+            was known:
+
+            \[
+                \bb{P}(\overline X_n - z_{\alpha/2}\sigma/\sqrt{n} \leq \mu \leq
+                \overline X_n + z_{\alpha/2} \sigma/\sqrt{n} | \mu) = 1 - \alpha
+            \]
+
+            \subsubsection{Example}
+                Look again at the battery problem, but now do not assume we know
+                the variance, so $X_i | \mu, \sigma^2 \sim \mathcal{N}(\mu,
+                \sigma^2)$ are IID conditional on $\mu, \sigma^2$. We had the
+                following observed values for battery quality:
+
+                \begin{center}
+                    \begin{tabular}{c | c c c c c c c c c c}
+                        Battery & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+                        \hline
+                        Quality & 90 & 86 & 82 & 77 & 94 & 90 & 87 & 90 & 86 &
+                            86
+                    \end{tabular}
+                \end{center}
+
+                Note that $\overline x_{10} = 86.8, S_{10}^2 = 203.6$. By what
+                we just derived, we have that:
+
+                \[
+                    \left[\overline X_n \pm z_{\alpha/2}^{(n-1)}
+                    \sqrt{\frac{S_n^2}{n - 1}} / \sqrt{n}\right] =
+                    \left[\overline X_{10} - z_{\alpha/2}^{(9)}
+                    \sqrt{\frac{S_{10}^2}{9}} / \sqrt{10}, \overline X_{10} +
+                    z_{\alpha/2}^{(9)} \sqrt{\frac{S_{10}^2}{9}} / \sqrt{10}
+                    \right]
+                \]
+
+                is a $100 \cdot (1 - \alpha)$\% confidence interval for $\mu$.
+
+                For our data, its observed value for $1 - \alpha = 0.95$ is:
+
+                \[
+                    \left[86.8 \pm 2.26 \sqrt{\frac{203.6}{9 \times 20}}\right]
+                    = [83.40, 90.20]
+                \]
+
+                $2.26$ comes from the quantiles for $t(n)$.
+
+                Compare this with the old confidence interval, $[83.7, 89.9]$:
+                they are quite similar. This is because:
+
+                \begin{enumerate}
+                    \item $\sqrt{\frac{S_{10}^2}{9}} = 4.756 \approx \sigma = 4$
+                    \item $z_{\alpha/2}^{(9)} = 2.26 \approx z_{\alpha/2} =
+                        1.96$
+                \end{enumerate}
 
     \newpage
     \section*{Problems Classes}
