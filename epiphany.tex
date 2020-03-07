@@ -3638,6 +3638,10 @@
 
     \newpage
     \section{Confidence Intervals}
+        \begin{fread}
+            [DS12, section 8.5]
+        \end{fread}
+
         \subsection{Confidence Intervals for Mean for Normal Sampling with
         Unknown Mean and Unknown Variance}
             Assume $X_i | \mu, \sigma^2 \sim \mathcal{N}(\mu, \sigma^2)$ with
@@ -3696,7 +3700,7 @@
                     \end{tabular}
                 \end{center}
 
-                Note that $\overline x_{10} = 86.8, S_{10}^2 = 203.6$. By what
+                Note that $\overline x_{10} = 86.8, s_{10}^2 = 203.6$. By what
                 we just derived, we have that:
 
                 \[
@@ -3713,7 +3717,7 @@
                 For our data, its observed value for $1 - \alpha = 0.95$ is:
 
                 \[
-                    \left[86.8 \pm 2.26 \sqrt{\frac{203.6}{9 \times 20}}\right]
+                    \left[86.8 \pm 2.26 \sqrt{\frac{203.6}{9 \times 10}}\right]
                     = [83.40, 90.20]
                 \]
 
@@ -3727,6 +3731,233 @@
                     \item $z_{\alpha/2}^{(9)} = 2.26 \approx z_{\alpha/2} =
                         1.96$
                 \end{enumerate}
+
+        \subsection{Confidence Intervals: General Case}
+            \begin{definition}[Confidence Interval]
+                We make the usual assumption about our data: Let $X_1, ..., X_n$
+                be IID conditional on $\Theta$. Let $t(\Theta)$ be any
+                real-valued function of $\Theta$. Let $l(X_1, ..., X_n), u(X_1,
+                ..., X_n)$ be two statistics (i.e: functions of the data $X_1,
+                ..., X_n$), such that for some fixed $\alpha \in [0, 1]$, we
+                have the following for all possible values of $\theta$:
+
+                \[
+                    \bb{P}(l(X_1, ..., X_n) \leq t(\theta) \leq u(X_1, ...,
+                    X_n) | \theta) \geq 1 - \alpha
+                \]
+
+                Then, the following random interval is called a $100 \cdot (1 -
+                \alpha)$\% \textbf{confidence interval} for $t(\Theta)$.
+
+                \[
+                    [l(X_1, ..., X_n), u(X_1, ..., X_n)]
+                \]
+
+                If the inequality is actually an equality (i.e: the probability
+                equals $1 - \alpha$), then the confidence interval is called
+                \textbf{exact}.
+
+                After observing $X_1 = x_1, ..., X_n = x_n$, we call the
+                following interval the \textbf{observed value} of the confidence
+                interval:
+
+                \[
+                    [l(x_1, ..., x_n), u(x_1, ..., x_n)]
+                \]
+
+                This may also be simply called the ``confidence interval'',
+                although this should generally refer to the interval when the
+                values are unknown.
+            \end{definition}
+
+            \begin{warn}
+                It's very important to remember that a confidence interval is
+                a statement about the data $X_1, ..., X_n$ given the value of
+                the parameter $\Theta = \theta$, \textit{not} a statement about
+                $\Theta$ given that $X_1 = x_1, ..., X_n = x_n$.
+
+                In particular, it is \underline{not true} that:
+
+                \[
+                    \bb{P}(l(x_1, ..., x_n) \leq t(\Theta) \leq u(x_1, ...,
+                    x_n) | x_1, ..., x_n) \geq 1 - \alpha
+                \]
+
+                This would be a \textit{credible interval}, if we had equality.
+            \end{warn}
+
+            For a confidence interval, regardless of our prior on $\Theta$, it
+            \underline{is true} that:
+
+            \[
+                \bb{P}(l(X_1, ..., X_n) \leq t(\Theta) \leq u(X_1, ..., X_n))
+                \geq 1 - \alpha
+            \]
+
+            This is proved via the partition theorem: Consider:
+
+            \[
+                \int\limits_\theta \bb{P}(... | \theta)f(\theta) d \theta \geq
+                \int\limits_\theta (1 - \alpha)f(\theta) d \theta = 1 - \alpha
+            \]
+
+        \subsection{Confidence Interval for Unknown Variance}
+            Consider returning to our battery testing example. For $\sigma$, we
+            know that:
+
+            \[
+                \left.\frac{S_n^2}{\sigma^2} \right| \mu, \sigma^2 \sim \chi^2(n
+                - 1)
+            \]
+
+            The sampling distribution does not depend on $\mu, \sigma^2$, so it
+            is a pivotal quantity. The quantity $\frac{S_n^2}{\sigma^2}$ only
+            depends on $\sigma^2$. We can exploit this to construct an exact
+            confidence interval for $\sigma$. Say we find (e.g: from the
+            $\chi^2$ quantile table) two values $\underline{c}_\alpha^{(n - 1)}$
+            and $\overline{c}_\alpha^{(n - 1)}$ such that:
+
+            \[
+                \bb{P}\left(\left.\underline{c}_\alpha^{(n-1)} \leq
+                \frac{S_n^2}{\sigma^2} \leq \overline{c}_\alpha^{(n-1)}\right|
+                \mu, \sigma^2\right) = 1 - \alpha
+            \]
+
+            Then:
+
+            \[
+                \bb{P}\left(\left.\frac{S_n}{\sqrt{\overline{c}_\alpha^{(n-1)}}}
+                \leq \sigma \leq \frac{S_n}{\sqrt{\underline{c}_\alpha^{(n-1)}}}
+                \right|\mu, \sigma^2\right) = 1 - \alpha
+            \]
+
+            So the $100 \cdot (1 - \alpha)$\% confidence interval for $\sigma$
+            is:
+
+            \[
+                \left[\frac{S_n}{\sqrt{\overline{c}_\alpha^{(n-1)}}},
+                \frac{S_n}{\sqrt{\underline{c}_\alpha^{(n-1)}}}\right]
+            \]
+
+            Let's now consider the observed value for this confidence interval
+            in the battery example. We have $n = 10, S_n^2 = 203.6$, so for (for
+            example) $1 - \alpha = 0.95$, we can take
+            $\underline{c}_\alpha^{(9)} = 2.70, \overline{c}_\alpha^{(9)} =
+            19.02$, from the $\chi^2$ quantile table at $0.025$ and $0.975$.
+            This would produce the following confidence interval:
+
+            \[
+                \left[\sqrt{\frac{203.6}{19.02}}, \sqrt{\frac{203.6}{2.70}}
+                \right] = [3.27, 8.68]
+            \]
+
+            This is still quite uncertain!
+
+    \newpage
+    \section{Hypothesis Testing}
+        \subsection{Introduction}
+            \begin{fread}
+                [DS12, section 9.1]
+            \end{fread}
+
+            Let's begin by returning to the battery problem, with $\theta =
+            (\mu, \sigma^2), X_i | \mu, \sigma^2 \sim \mathcal{N}(\mu,
+            \sigma^2)$ and $X_i$ IID conditional on $\Theta$. We will denote by
+            $\Omega$ the space of all possible values of $\theta$. In our case,
+            we have:
+
+            \[
+                \Omega = \{(\mu, \sigma^2): \mu \in \R, \sigma \in (0, \infty)\}
+            \]
+
+            Let's say that we are interested in whether or not $\mu \geq 90$. We
+            will denote by $\Omega_0$ the region of $\Omega$ where the
+            assumption is true, and by $\Omega_1$ the region of $\Omega$ where
+            the assumption is false. In this case, we therefore have:
+
+            \[
+                \Omega_0 = \{(\mu, \sigma^2) \in \Omega: \mu \geq 90\}, \quad
+                \Omega_1 = \{(\mu, \sigma^2) \in \Omega: \mu < 90\}
+            \]
+
+        \subsection{The Null and Alternative Hypotheses}
+            We'll introduce some more notation:
+
+            \begin{definition}[Null and Alternative Hypotheses]
+                We denote by $H_0$ the hypothesis that $\Theta \in \Omega_0$,
+                called the \textbf{null hypothesis}.
+
+                We denote by $H_1$ the hypothesis that $\Theta \in \Omega_1$,
+                called the \textbf{alternative hypothesis}.
+            \end{definition}
+
+            In hypothesis testing, our aim is to decide which of $H_0$ or $H_1$
+            is true. If we get this decision wrong, we might imagine that this
+            will incur some cost. If we decide that $H_1$ is true, we say that
+            we \textbf{reject the null hypothesis}. We never say that we reject
+            the alternative hypothesis, since is is the assumption that the
+            alternative hypothesis is false. Similarly, we never say that we
+            accept the null hypothesis, but rather that we do not reject the
+            alternative hypothesis. We treat $H_0, H_1$ \textbf{asymmetrically}.
+
+        \subsection{Simple and Composite, One-Sided and Two-Sided}
+            \begin{definition}[Simple and Composite]
+                If $\Omega_i$ is a \textbf{singleton} (i.e: it contains only a
+                single value of $\theta$) then we call $H_i$ a \textbf{simple
+                hypothesis}. Otherwise, we call $H_i$ \textbf{composite}.
+            \end{definition}
+
+            In our example, both $\Omega_0$ and $\Omega_1$ are composite.
+
+            \begin{definition}[One-Sided and Two-Sided]
+                In the case that $\Omega \subseteq \R$ (i.e: the parameter is
+                one-dimensional), we say that $H_i$ is \textbf{one-sided} if it
+                is of one of the following forms:
+
+                \[
+                    H_i: \Theta \leq \theta*, \quad H_i: \Theta \geq \theta*,
+                    \quad H_i: \Theta < \theta*, \quad \text{or } H_i: \Theta >
+                    \theta*
+                \]
+
+                for some $\theta* \in \R$.
+
+                We say that $H_i$ is \textbf{two-sided} if it is of the form
+                $H_i: \Theta \neq \theta*$, for some $\theta* \in \R$.
+            \end{definition}
+
+        \subsection{Bayes Test Procedure}
+            \begin{fread}
+                [DS12, section 9.8]
+            \end{fread}
+
+            How do we do hypothesis testing in the Bayesian approach? We use the
+            posterior probabilities $\bb{P}(\Theta \in \Omega_0 | x_1, ...,
+            x_n)$ and $\bb{P}(\Theta \in \Omega_1 | x_1, ..., x_n) = 1 - \bb{P}
+            (\Theta \in \Omega_0 | x_1, ..., x_n)$. These probabilities fully
+            quantify the uncertainty about $H_0, H_1$.
+
+            For example, we may decide that $H_0$ is true if $\bb{P}(\Theta \in
+            \Omega_0 | x_1, ..., x_n)$ exceeds some threshold, for example,
+            $0.5$. This doesn't have to be $0.5$: The threshold can be informed
+            by the cost of making an error in the decision (see the referenced
+            section in [DS12] for more on this).
+
+            \subsubsection{Example: Battery Problem}
+                Assume that $\sigma = 5$ is known. We found that $\Theta | x_1,
+                ..., x_n \sim \mathcal{N}(86.9, 1.56^2)$. Let us test the
+                hypotheses we outlined in the introduction: $H_0: \Theta \geq
+                90, H_1: \Theta < 90$. Then:
+
+                \begin{align*}
+                    \bb{P}(\Theta \geq 90| x_1, ..., x_n) & = \bb{P}\left(\left.
+                        \frac{\Theta - 86.9}{1.56} \geq \frac{90 - 86.9}{1.56}
+                        \right| x_1, ..., x_n\right) \\
+                    & = 1 - \Phi(0.98) \\
+                    & = 0.024
+                \end{align*}
+
+                This is close to 0, so we may reject $H_0$.
 
     \newpage
     \section*{Problems Classes}
@@ -4057,5 +4288,181 @@
                 < 0$. This achieves a maximum near $\theta = 0$, but for $\theta
                 = 0, \text{Po}(\theta)$ is not a valid distribution, as
                 $\widehat \theta$ does not exist in this case!
+
+        \subsection*{06-Mar-2020}
+        \addcontentsline{toc}{subsection}{\protect\numberline{}06-Mar-2020}
+            \paragraph{65}
+            \textit{Suppose that $X_1, ..., X_n$ form a random sample from the
+            normal distribution with known mean $\mu$ and known variance
+            $\sigma^2$. Let $S_n^2 := \sum\limits_{i=1}^n (X_i - \overline
+            X_n)^2$. Determine the smallest value of $n$ for which the following
+            relation is satisfied:}
+
+            \[
+                \bb{P}\left(\frac{S_n^2}{n\sigma^2} \leq 1.5\right) \geq 0.95
+            \]
+
+                We know from lectures that:
+
+                \[
+                    Y_{n-1} := \frac{S_n^2}{\sigma^2} \sim \chi^2(n - 1)
+                \]
+
+                Therefore, we need to find an $n$ such that:
+
+                \[
+                    \bb{P}\left(\frac{S_n^2}{\sigma^2} \leq 1.5n\right) =
+                    \bb{P}(Y_{n-1} \leq 1.5n) \geq 0.95
+                \]
+
+                Looking at the table for the Chi-Square distribution, with $n =
+                20$, we see that $\bb{P}(Y_{n-1} \leq 30.14) = 0.95$, so we must
+                have $\bb{P}(Y_{n-1} \leq 1.5n = 30) < 0.95$. Therefore, $n =
+                21$ is the lowest value of $n$ satisfying the inequality.
+
+            \paragraph{68}
+            \textit{Suppose that the five random variables $X_1, ..., X_5$ are
+            IID and that each has the standard normal distribution. Determine a
+            constant $c$ such that the random variable given by:}
+
+            \[
+                \frac{c(X_1 + X_2)}{(X_3^2 + X_4^2 + X_5^2)^{1/2}}
+            \]
+
+            \textit{will have a $t$ distribution.}
+
+                If $X \sim \mathcal{N}(0, 1)$, and $Y \sim \chi^2(n)$ are
+                independent, then $\frac{X}{\sqrt{Y}{n}} \sim t(n)$. Now note the
+                following:
+
+                \[
+                    \frac{1}{\sqrt{2}} (X_1 + X_2) \sim \mathcal{N}(0, 1)
+                \]
+                \[
+                    (X_3^2 + X_4^2 + X_5^2) \sim \chi^2(3)
+                \]
+
+                Therefore, we have:
+
+                \[
+                    \frac{1/\sqrt{2} \cdot (X_1 + X_2)}{\sqrt{1/3 \cdot (X_3^2 +
+                    X_4^2 + X_5^2)}} \sim t(3) \implies c = \sqrt{\frac{3}{2}}
+                \]
+
+            \paragraph{73}
+            \textit{Show that, for normal sampling with unknown mean $\mu$ and
+            unknown variance $\sigma^2$, for large $n$, we approximately have
+            that:}
+
+            \[
+                \bb{P}\left(\left.n - 1 - z_{\alpha/2}\sqrt{2(n - 1)} \leq
+                \frac{S_n^2}{\sigma^2} \leq n - 1 + z_{\alpha/2}\sqrt{2(n - 1)}
+                \right|\mu, \sigma^2\right) = 1 - \alpha
+            \]
+
+            \textit{where $z_{\alpha/2} := \Phi^{-1}(1 - \alpha/2)$ as usual.}
+
+                For large $n$, by the CLT, we have:
+
+                \[
+                    \left.\frac{S_n^2}{\sigma^2}\right|\mu, \sigma^2 \sim
+                    \chi^2(n -1) \approx \mathcal{N}(n - 1, 2(n - 1))
+                \]
+
+                since $\E(y) = n, \var(Y) = 2n$ for $Y \sim \chi^2(n)$.
+
+                \begin{align*}
+                    & \bb{P}\left(\left.n - 1 - z_{\alpha/2}\sqrt{2(n - 1)} \leq
+                        \frac{S_n^2}{\sigma^2} \leq n - 1 + z_{\alpha/2}
+                        \sqrt{2(n - 1)} \right|\mu, \sigma^2\right) = 1 - \alpha
+                        \\
+                    \iff & \bb{P}\left(\left.-z_{\alpha/2} \leq \frac{1}{\sqrt{2
+                        (n-1)}}\left(\frac{S_n^2}{\sigma^2} - (n - 1)\right)
+                        \leq z_{\alpha/2}\right|\mu, \sigma^2\right) = 1 -
+                        \alpha
+                \end{align*}
+
+                Now note that we have the following approximate result:
+
+                \[
+                    \frac{1}{\sqrt{2 (n-1)}}\left(\frac{S_n^2}{\sigma^2} - (n -
+                    1)\right) \sim \mathcal{N}(0, 1)
+                \]
+
+                The second statement clearly then holds, since this is a
+                well-known result for the normal distribution. Therefore, the
+                proposition holds.
+
+            \paragraph{74}
+            \textit{(a) Show that, for any sequence of numbers $x_1, ..., x_n$
+            we have that:}
+
+            \[
+                \sum_{i=1}^n (x_i - \overline x_n)^2 = \sum_{i=1}^n x_i^2 -
+                n\overline x_n^2
+            \]
+
+            \textit{where $\overline x_n := \frac{1}{n} \sum\limits_{i=1}^n x_i$
+            as usual.}
+
+                \begin{align*}
+                    \sum_{i=1}^n (x_i - \overline x_n)^2 & = \sum_{i=1}^n x_i^2
+                        - 2\overline x_n \sum_{i=1} x_i + n \overline x_n^2 \\
+                    & = \sum_{i=1}^n x_i^2 - 2 n\overline x_n^2 + n \overline
+                        x_n^2 \\
+                    & = \sum_{i=1}^n x_i^2 - n\overline x_n^2
+                \end{align*}
+
+            \textit{(b) An article in cancer research tested the tumorigenesis
+            of a drug. Rats were randomly selected from litter and given the
+            drug. The times of tumour appearance were recorded as follows:}
+
+            \begin{center}
+                \textit{(snipped for space, see the actual problem sheet)}
+            \end{center}
+
+            \textit{It can be verified that the number of observations is 41,
+            the sum of the data is 3640, and the sum of squares of the data is
+            333392. Calculate $s_n^2$ for the above data.}
+
+                Using the above fact, we have:
+
+                \begin{align*}
+                    s_n^2 & = \sum_{i=1}^n (x_i - \overline x_n)^2 \\
+                    & = \sum_{i=1}^n x_i^2 - n\overline x_n^2 \\
+                    & = 333392 - 41 \left(\frac{3640}{31}\right)^2 \\
+                    & = 10231.02
+                \end{align*}
+
+            \textit{(c) For the same cancer data, use the normal approximation
+            to the $\chi^2$ distribution to find the observed value of a 95\%
+            confidence interval for the standard deviation of time until a
+            tumour appearance. Explicitly state any assumptions that you make,
+            and explain why a normal approximation is justified for this case.}
+
+                Since $n$ is large, we know the following:
+
+                \[
+                    \bb{P}\left(\left.n - 1 - z_{\alpha/2} \sqrt{2(n-1)} \leq
+                    \frac{S_n^2}{\sigma^2} \leq n - 1 +
+                    z_{\alpha/2}\sqrt{2(n-1)} \right|\mu, \sigma^2\right) = 1 -
+                    \alpha
+                \]
+                \[
+                    \implies \bb{P}\left(\left.\sqrt{\frac{S_n^2}{n - 1 +
+                    z_{\alpha/2}\sqrt{2(n-1)}}} \leq \sigma \leq
+                    \sqrt{\frac{S_n^2}{n - 1 - z_{\alpha/2}\sqrt{2(n-1)}}}
+                    \right|\mu, \sigma^2\right)
+                \]
+
+                Therefore, we have an approximate confidence interval on
+                $\sigma$. For our data, with $1 - \alpha = 0.95$, we find:
+
+                \[
+                    \left[\sqrt{\frac{S_n^2}{n - 1 +
+                    z_{\alpha/2}\sqrt{2(n-1)}}},
+                    \sqrt{\frac{S_n^2}{n - 1 - z_{\alpha/2}\sqrt{2(n-1)}}}\,\,
+                    \right] = [13.34, 21.34]
+                \]
 
 \end{document}
