@@ -3959,6 +3959,149 @@
 
                 This is close to 0, so we may reject $H_0$.
 
+        \subsection{Critical Region and Test Statistics}
+            \begin{fread}
+                [DS12, section 9.1]
+            \end{fread}
+
+            Suppose that $X_i | \theta \sim \mathcal{N}(\theta, \sigma^2)$,
+            where $\sigma^2$ is known, and $X_i$ are IIDE conditional on
+            $\Theta$, as in the original battery problem. Let's then say that we
+            want to test the following hypotheses for some $\theta_0 \in \R$.
+
+            \[
+                H_0: \Theta = \theta_0
+            \]
+            \[
+                H_1: \Theta \neq \theta_0
+            \]
+
+            If we once again consider the battery example, we could be testing
+            $\theta_0 = 90$, for example.
+
+            It seems reasonable to reject $H_0$ if $\overline X_n$ is far from
+            $\theta_0$. In formal notation, we pick some value $c > 0$, then
+            define:
+
+            \[
+                S_0 := \{(x_1, ..., x_n) \in \R^n: |\overline x_n - \theta_0| <
+                c\}
+            \]
+            \[
+                S_1 := \{(x_1, ..., x_n) \in \R^n: |\overline x_n - \theta_0|
+                \geq c\} = \R^n \setminus S_0 = S_0^c
+            \]
+
+            We then reject $H_0$ when $(x_1, ..., x_n) \in S_1$.
+
+            \begin{definition}[Critical Region{,} Test Statistic{,} Rejection
+            Region]
+                Consider a subset $S_1$ of the data space containing the values
+                of $(x_1, ..., x_n)$ for which we reject $H_0$: we call this the
+                \textbf{critical region} of the test.
+
+                In the above example, the critical region can be expressed in
+                terms of a statistic. We can generalise this notion of using a
+                statistic to express the critical region: Let $T = r(X_1, ...,
+                X_n)$ be a statistic, and let $R \subseteq \R$. If a test
+                procedure is of the form ``reject $H_0$ if $T \in R$'', then $T$
+                is called the \textbf{test statistic}, and $R$ is called the
+                \textbf{rejection region} of the test.
+
+                In the example above, $|\overline X_n - \theta_0|$ is the test
+                statistic, and the interval $[c, +\infty)$ is the rejection
+                region.
+            \end{definition}
+
+        \subsection{Power Function and Types of Error}
+            \begin{fread}
+                [DS12, section 9.1]
+            \end{fread}
+
+            \begin{definition}[Power Function]
+                Let $\delta$ denote a test procedure. The probability that the
+                test will reject $H_0$, conditional on $\Theta = \theta$, is
+                denoted by $\pi(\theta | \delta)$, and is called the
+                \textbf{power function} of the test $\delta$.
+
+                If $S_1$ is the critical region of the test, then:
+
+                \[
+                    \pi(\theta | \delta) = \bb{P}((X_1, ..., X_n) \in S_1 |
+                    \theta), \quad \theta \in \Omega
+                \]
+
+                If $T$ is the test statistic, and $R$ is the rejection region,
+                then:
+
+                \[
+                    \pi(\theta | \delta) = \bb{P}(T \in R | \theta), \quad
+                    \theta \in \Omega
+                \]
+            \end{definition}
+
+            What does an ideal power function look like? In the ideal case, we
+            should reject $H_0$ when $\theta \in \Omega_1$, and not reject
+            $H_0$ when $\theta \in \Omega_0$, so the ideal power function is
+            given by:
+
+            \[
+                \pi(\theta | \delta) = \begin{cases}
+                    1, & \theta \in \Omega_1 \\
+                    0, & \theta \in \Omega_0
+                \end{cases}
+            \]
+
+            It is rare to have a test that reaches this ideal. However, the
+            closer the power function is to this ideal, the better we consider
+            the test to be.
+
+            \subsubsection{Example}
+                Let's revisit the case of normal sampling as seen in the battery
+                example, so we have $X_i | \theta \sim \mathcal{N}(\theta,
+                \sigma^2)$ IID conditional on $Theta$, with $\sigma$ known.
+                We'll test the following hypotheses using the test statistic
+                $|\overline X_n - \theta_0|$ and rejection region $(c,
+                +\infty)$:
+
+                \[
+                    H_0: \Theta = \theta_0
+                \]
+                \[
+                    H_1: \Theta \neq \theta_0
+                \]
+
+                The power function is then as follows:
+
+                \begin{align*}
+                    \pi(\theta | \delta) & = \bb{P}(|\overline X_n - \theta_0|
+                        \geq c | \theta) \\
+                    & = \bb{P}(\overline X_n - \theta_0 \geq c | \theta) +
+                        \bb{P}(\overline X_n - \theta \leq -c | \theta) \\
+                    & = \bb{P}\left(\left.\frac{\overline X_n - \theta}{\sigma/
+                        \sqrt{n}} \geq \frac{c - \theta + \theta_0}{\sigma/
+                        \sqrt{n}}\right|\theta\right) + \bb{P}\left(\left.
+                        \frac{\overline X_n - \theta}{\sigma/\sqrt{n}} \leq
+                        \frac{-c - \theta + \theta_0}{\sigma/\sqrt{n}}\right|
+                        \theta\right) \\
+                    & = 1 - \Phi\left(\frac{c - \theta + \theta_0}
+                        {\sigma/\sqrt{n}}\right) + \Phi\left(\frac{-c - \theta +
+                        \theta_0}{\sigma/\sqrt{n}}\right)
+                \end{align*}
+
+                In the battery example, we had $\sigma = 5, n = 10$, and said we
+                were interested in testing $H_0: \theta = 90$, so we will let
+                $\theta_0 = 90$.
+
+                The figure below shows the ideal power function, compared with
+                the power function we have obtained for various values of $c$:
+
+                \begin{figure}[ht]
+                    \centering
+                    \includegraphics[width=0.5\textwidth]
+                    {./figures/powerfunction.png}
+                \end{figure}
+
     \newpage
     \section*{Problems Classes}
     \addcontentsline{toc}{section}{\protect\numberline{}Problems Classes}
