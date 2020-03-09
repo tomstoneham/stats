@@ -6,8 +6,12 @@ def buildlatex(distppf, quantiles, ran):
     buf = """\\setlength{\\tabcolsep}{3pt}
 \\renewcommand{\\arraystretch}{1}
 \\begin{center}
-\\begin{tabular}{c | c c c c c c c c c c c c}
-$n$"""
+\\begin{tabular}{c |"""
+
+    for quant in quantiles:
+        buf += " c"
+
+    buf += "}\n$n$"
 
     for quant in quantiles:
         buf += " & " + str(quant)
@@ -28,8 +32,8 @@ $n$"""
     return buf
 
 def mchi2():
-    quantiles = [0.005, 0.01, 0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975,
-        0.99, 0.995]
+    quantiles = [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95,
+        0.975, 0.99, 0.995]
     ran = range(1, 31) + range(32, 40, 2) + range(42, 50, 4) + range(50, 101, 5)
     buf = buildlatex(chi2.ppf, quantiles, ran)
 
