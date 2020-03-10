@@ -13,6 +13,7 @@
 \usepackage{pdfpages}
 \usepackage{transparent}
 \usepackage{mathtools}
+\usepackage{tcolorbox}
 
 % Remove paragraph indentation & add space between paragraphs
 \setlength{\parindent}{0em}
@@ -101,4 +102,53 @@
 }
 \newcommand{\argmax}[1]{%
     \underset{{#1}}{\text{arg max}}
+}
+
+% Colours
+\definecolor{flatblue}{RGB}{84, 109, 229}
+\definecolor{flatblack}{RGB}{48, 57, 82}
+\definecolor{flatred}{RGB}{225, 95, 65}
+\definecolor{flatgreen}{RGB}{33, 140, 116}
+
+% Definitions, related questions, warnings, etc.
+\tcbuselibrary{breakable}
+
+\newtcolorbox{definition}[1][]{
+    arc=0cm,
+    bottomrule at break=0pt,
+    breakable,
+    colback=white,
+    colframe=flatblack,
+    title=Definition: #1,
+    toprule at break=0pt
+}
+
+\newtcolorbox{relq}{
+    arc=0cm,
+    bottomrule at break=0pt,
+    breakable,
+    colback=white,
+    colframe=flatblue,
+    title=Related Questions,
+    toprule at break=0pt
+}
+
+\newtcolorbox{warn}{
+    arc=0cm,
+    bottomrule at break=0pt,
+    breakable,
+    colback=white,
+    colframe=flatred,
+    title=Warning,
+    toprule at break=0pt
+}
+
+\newtcolorbox{fread}{
+    arc=0cm,
+    bottomrule at break=0pt,
+    breakable,
+    colback=white,
+    colframe=flatgreen,
+    title=Further Reading,
+    toprule at break=0pt
 }
