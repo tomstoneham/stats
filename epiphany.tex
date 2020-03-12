@@ -4055,6 +4055,104 @@
                     {./figures/powerfunction.png}
                 \end{figure}
 
+                Typically, we want to design our tests in order to control the
+                probability of making an error.
+
+                \begin{definition}[Types of Error]
+                    A \textbf{type I error} occurs if we decide to reject a true
+                    null $H_0$. A \textbf{type II error} occurs if we fail to
+                    reject a false null $H_0$.
+
+                    Therefore, if $\theta \in \Omega_0$, then $\pi(\theta |
+                    \delta)$ is the probability of a type I error (conditional
+                    on $\Theta = \theta$), and if $\theta \in \Omega_1$, then $1
+                    - \pi(\theta | \delta)$ is the probability of a type II
+                    error (conditional on $\Theta = \theta$).
+
+                    Since either $\theta \in \Omega_0$, or $\theta \in
+                    \Omega_1$, but not both, only one type of error is possible.
+                    However, we can't know which type of error we're actually
+                    making, since we don't know $\theta$.
+
+                    If we can choose between different tests, then we want
+                    $\pi(\theta | \delta)$ to be low for $\theta \in \Omega_0$,
+                    and high for $\theta \in \Omega_1$.
+
+                    Normally, the hypotheses are arranged in such a way that a
+                    type I error is the most important one to be avoided, so we
+                    focus on that one first.
+                \end{definition}
+
+        \subsection{Level of Significance and Size of a Test}
+            \begin{definition}[]
+                A test $\delta$ has \textbf{level of significance} $\alpha_0$
+                when $\pi(\theta | \delta) \leq \alpha_0 \, \fa \, \theta \in
+                \Omega_0$ (i.e: when the probability of a type I error given
+                $\Theta = \theta$ does not exceed $\alpha_0$). We also say that
+                ``$\delta$ is a level $\alpha_0$ test''.
+
+                The \textbf{size} of a test $\delta$ i:
+
+                \[
+                    \alpha(\delta) = \sup_{\theta \in \Omega_0} \pi(\theta |
+                    \delta) = \min \{\alpha_0: \pi(\theta | \delta) \leq
+                    \alpha_0 \, \fa \, \theta \in \Omega_0\}
+                \]
+
+                Note that, if $H_0$ is simple, (i.e: $\Omega_0 = \{\theta_0\}$),
+                then $\alpha(\delta) = \pi(\theta_0 | \delta)$.
+
+                We won't use the level of significance at all in this course,
+                the size is just better, but we need to know about it because
+                knowledge of it will be assumed in later years.
+            \end{definition}
+
+            \subsubsection{Example}
+                \textit{Assume $X_i | \theta \sim \mathcal{U}(0, \theta)$, where
+                $\theta$ is unknown, assuming $X_i$ are IID conditional on
+                $\Theta$. Say we want to test $H_0: 3 \leq \Theta \leq 4$ vs
+                $H_1: \Theta < 3$ or $\theta > 4$.}
+
+                We'll define $Y_n$ as follows:
+
+                \[
+                    Y_n := \max\{X_1, ..., X_n\}
+                \]
+
+                This is the maximum likelihood estimator for $\Theta$. We say
+                we'll reject $H_0$ when $Y_n < 2.5$, or when $Y_n > 4$ (4
+                suffices here, since we know as soon as we see 4 we can reject
+                the null hypothesis. However, three does not suffice for the
+                lower bound).
+
+                The power function for this scenario is then given by:
+
+                \begin{align*}
+                    \pi(\theta | \delta) & = \bb{P}(Y_n < 2.5 \lor Y_n > 4 |
+                        \Theta = \theta) \\
+                    & = \bb{P}(Y_n < 2.5 | \Theta = \theta) + 1 - \bb{P}(Y_n
+                        \leq 4 | \Theta = \theta) \\
+                    & = \begin{cases}
+                        1 + 1 - 1 = 1, & \theta \leq 2.5 \\
+                        \left(\frac{2.5}{\theta}\right)^n + 1 - 1 = \left
+                            (\frac{2.5}{\theta}\right)^n, & 2.5 \leq \theta \leq
+                            4 \\
+                        \left(\frac{2.5}{\theta}\right)^n + 1 -
+                            \left(\frac{4}{\theta}\right)^n, & \theta \geq 4
+                    \end{cases}
+                \end{align*}
+
+                We can then find the size:
+
+                \begin{align*}
+                    a(\delta) & = \sup_{\theta \in \Omega_0} \pi(\theta |
+                        \delta) \\
+                    & = \sup_{3 \leq \theta \leq 4} \pi(\theta | \delta) \\
+                    & = \pi(\theta = 3 | \delta) \quad \textit{(because
+                        $\pi(\theta | \delta)$ is decreasing in $\theta \in [3,
+                        4]$)}
+                \end{align*}
+
     \input{./problems.tex}
 
 \end{document}
