@@ -4153,6 +4153,140 @@
                         4]$)}
                 \end{align*}
 
+            \subsubsection{Optimising Tests}
+
+                If $T$ is a test statistic and our test $\delta$ is of the form
+                ``reject $H_0$ when $T \geq c$'', then:
+
+                \[
+                    \alpha(\delta) = \sup_{\theta \in \Omega_0} \bb{P}(T \geq c
+                    | \theta)
+                \]
+
+                This will decrease with increasing values of $c$! So, to get a
+                small value of $\alpha(\delta)$ (i.e: a small size/probability
+                of type I errors), we need a large value of $c$.
+
+                However, we also want the power function $\bb{P}(T \geq c |
+                \theta)$ to be large (i.e: close to 1) for $\theta \in
+                \Omega_1$. Therefore, $c$ should not be too large either.
+
+                So, picking $c$ is a tradeoff. One solution is to pick the
+                smallest possible value for $c$ such that the size is equal to
+                some pre-specified value $\alpha_0 \in [0, 1]$. This limits the
+                worst case type II error probability, and fixes the type I error
+                probability $\alpha_0$.
+
+                \paragraph{Example}
+                    Consider again our battery problem, assuming that $\sigma =
+                    5$ is known, and $X_i | \theta \sim \mathcal{N}(\theta,
+                    \sigma^2)$ are IID conditional on $\Theta$. Say we reject
+                    $H_0: \Theta = \theta_0$, with $\theta_0 = 90$, when
+                    $|\overline X_n - \theta_0| \geq c$. Then, the size of the
+                    test is:
+
+                    \begin{align*}
+                        \alpha(\delta) & = \pi(\theta_0 | \delta) \\
+                        & = \bb{P}(|\overline X_n - \theta_0| \geq c | \Theta =
+                            \theta_0) \\
+                        & = \bb{P}\left(\left.\left|\frac{\overline X_n -
+                            \theta_0}{\sigma/\sqrt{n}}\right| \geq
+                            \frac{c}{\sigma/\sqrt{n}}\right|\Theta = \theta_0
+                            \right)
+                    \end{align*}
+
+                    This is a standard normal distribution, and this probability
+                    is equal to $\alpha_0$ when:
+
+                    \[
+                        \frac{c\sqrt{n}}{\sigma} = \Phi^{-1}\left(1 -
+                        \frac{\alpha_0}{2}\right) = z_{\alpha_0/2}
+                    \]
+
+                    So $c = z_{\alpha_0/2} \frac{\sigma}{\sqrt{n}} = 1.96 \cdot
+                    \frac{5}{\sqrt{10}} \approx 3.1$ for $\alpha_0 = 0.05$.
+
+        \subsection{The $p$-value}
+            When testing, the outcome of the test (whether or not to reject)
+            depends on our choice of significance level, $\alpha_0$. Different
+            people might choose to use different values of $\alpha_0$. So,
+            instead of reporting whether or not \textit{we} rejected $H_0$ at
+            level $\alpha_0$, we instead report the $p$-value, defined as
+            follows:
+
+            \begin{definition}[$p$-value]
+                The \textbf{p-value} is the smallest level $\alpha_0$ under
+                which we would reject $H_0$ at level $\alpha_0$ with the
+                observed data.
+
+                It's probably better to think about this in terms of
+                \textit{size}: so the smallest \textit{size} at which we would
+                reject $H_0$ for the test with size $\alpha_0$ with the observed
+                data.
+            \end{definition}
+
+            \subsubsection{Example}
+                In the battery example, we observed $\overline x_n = 86.8$. Note
+                that $|86.8 - 90| > 3.1$, so we would reject $H_0: \Theta = 90$
+                at the 0.05 level. Instead however, we could report the
+                $p$-value: For any given level $\alpha_0$, we know we will
+                reject $H_0$ if:
+
+                \[
+                    |\overline x_n - \theta_0| \geq z_{\alpha/2}
+                    \frac{\sigma}{\sqrt{n}}
+                \]
+
+                Or equivalently, when:
+
+                \[
+                    2.02 = \left|\frac{\overline x_n - \theta_0}
+                    {\sigma/\sqrt{n}}\right| \geq z_{\alpha_0/2} = \Phi^{-1}(1 -
+                    \alpha_0/2)
+                \]
+
+                So we need $\Phi(2.02) \geq 1 - \frac{\alpha_0}{2}$.
+
+                The smallest value of $\alpha_0$ for which this is satisfied is
+                $\alpha_0 = 2(1 - \Phi(2.02)) = 0.043$. So the $p$-value is
+                $0.043$, and therefore we would reject at all levels $\alpha_0
+                \geq 0.043$.
+
+            \subsubsection{Theorem}
+                For tests of the form ``reject $H_0$ when $T \geq c$'', the
+                $p$-value is equal to:
+
+                \[
+                    \sup_{\theta \in \Omega_0} \bb{P}(T \geq t | \theta)
+                \]
+
+                where $t$ is the actual observed value of the test statistic
+                $T$.
+
+                \paragraph{Proof}
+                    We will reject the null hypothesis at the level $\alpha_0$
+                    when $t \geq c$ for $c$ satisfying:
+
+                    \[
+                        \pi(\theta | \delta) = \bb{P}(T \geq c | \theta) \leq
+                        \alpha_0 \, \fa \, \theta \in \Omega_0
+                    \]
+
+                    So, the $p$-value is:
+
+                    \begin{align*}
+                        \min\{\alpha_0: \bb{P}(T \geq c | \theta) \leq \alpha_0
+                            \, \fa \, \theta \in \Omega_0, t \geq c\} & =
+                            \min\{\sup_{\theta \in \Omega_0} \bb{P}(T \geq c |
+                            \theta): t \geq c\} \\
+                        & = \sup_{\theta \in \Omega_0} \bb{P}(T \geq t | \theta)
+                    \end{align*}
+
+                    This final equality holds as the supremum
+                    $\sup\limits_{\theta \in \Omega_0} \bb{P}(T \geq c |
+                    \theta)$ is a decreasing function of $c$, so we should take
+                    $c$ to be as large as possible to minimise this.
+
     \input{./problems.tex}
 
 \end{document}
