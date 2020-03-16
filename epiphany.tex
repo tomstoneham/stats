@@ -4282,10 +4282,177 @@
                         & = \sup_{\theta \in \Omega_0} \bb{P}(T \geq t | \theta)
                     \end{align*}
 
-                    This final equality holds as the supremum
-                    $\sup\limits_{\theta \in \Omega_0} \bb{P}(T \geq c |
-                    \theta)$ is a decreasing function of $c$, so we should take
-                    $c$ to be as large as possible to minimise this.
+                    This final equality holds as  $\sup\limits_{\theta \in
+                    \Omega_0} \bb{P}(T \geq c | \theta)$ is a decreasing
+                    function of $c$, so we should take $c$ to be as large as
+                    possible to minimise this. From the inequality $t \geq c$,
+                    the largest possible value of $c$ will be $t$.
+
+                \paragraph{Example}
+                    In the battery example, we can check that the $p$-value is:
+
+                    \begin{align*}
+                        \sup_{\theta \in \Omega_0} \bb{P}(|\overline X_n -
+                            \theta_0| \geq |86.8 - \theta_0| | \theta_0) & =
+                            \bb{P}(|\overline X_n - 90| \geq 3.2 | \Theta = 90)
+                            \\
+                        & = \bb{P}\left(\left.\left|\frac{\overline X_n - 90}
+                            {5/\sqrt{10}}\right| \geq \frac{3.2}{5/\sqrt{10}}
+                            \right | \Theta = 90 \right) \\
+                        & = \bb{P}\left(\left.\left|\frac{\overline X_n - 90}
+                            {5/\sqrt{10}}\right| \geq 2.02 \right | \Theta = 90
+                            \right) \\
+                        & = 2(1 - \Phi(2.02)) \\
+                        & = 0.043
+                    \end{align*}
+
+                    We already found 0.043 to be the $p$-value, so we can see
+                    that the theorem works here.
+
+    \newpage
+    \section{Bayesian Analysis of Normal Sampling with Unknown Mean, Unknown
+    Variance}
+        \begin{fread}
+            [DS12, section 8.6]
+        \end{fread}
+
+        \subsection{Likelihood}
+            We assume that we have $X_i | \mu, \tau \sim \mathcal{N}\left(\mu,
+            \frac{1}{\tau}\right)$ IID conditional on $M, T$, corresponding to
+            the parameters. Recall that $\tau$ is the precision parameter, with
+            $\frac{1}{\tau} = \sigma^2$. $M$ is the random variable
+            corresponding to $\mu$, and $T$ is the random variable corresponding
+            to $\tau$. We observe a sample $x_1, ..., x_n$ to learn about $M$
+            and $T$.
+
+            First, recall Bayes's theorem:
+
+            \begin{align*}
+                \text{posterior dist } & \propto \text{ prior dist } \cdot
+                    \text{ likelihood } \\
+                f(\mu, \tau | x_1, ..., x_n) & \propind{\mu, \tau} f(\mu, \tau)
+                    \cdot f(x_1, ..., x_n | \mu, \tau)
+            \end{align*}
+
+            We know that the likelihood is given by the product:
+
+            \[
+                f(x_1, ..., x_n | \mu, \tau) = \prod_{i=1}^n f(x_i | \mu, \tau)
+            \]
+
+            We further know that:
+
+            \[
+                f(x_i | \mu, \tau) = \sqrt{\frac{\tau}{2\pi}}
+                \exp\left(-\frac{1}{2}\tau (x_i - \mu)^2\right)
+            \]
+
+            So we have the formula for the likelihood:
+
+            \[
+                f(x_1, ..., x_n | \mu, \tau) = \left(\frac{\tau}{2\pi}\right)
+                ^{n/2} \exp\left(-\frac{1}{2}\tau \sum_{i=1}^n (x_i - \mu)^2
+                \right)
+            \]
+
+        \subsection{The Normal-Gamma Prior}
+            Suppose we assign the following prior distributions to $M$ and $T$:
+
+            \[
+                M | \tau \sim \mathcal{N}\left(\mu_0, \frac{1}{\lambda_0 \tau}
+                \right), \quad T \sim \mathrm{Gamma}(\alpha_0, \beta_0)
+            \]
+            \begin{align*}
+                \implies f(\mu | \tau) & = \sqrt\frac{\lambda_0\tau}{2\pi}
+                    \exp\left(-\frac{1}{2}\lambda_0\tau(\mu - \mu_0)^2\right) \\
+                f(\tau) & = \frac{\beta_0^{\alpha_0}} \tau^{\alpha_0 - 1}
+                    \exp(-\beta_0 \tau) \\
+                f(\mu, \tau) & = f(\mu | \tau) f(\tau) \\
+                & \propind{\mu, \tau} \tau^{\alpha_0 - 1/2} \exp\left(-\tau
+                    \left(\beta_0 + \frac{\lambda_0}{2}(\mu - \mu_0)^2\right)
+                    \right)
+            \end{align*}
+
+            This is called the \textbf{normal-gamma prior} for $M$ and $T$, with
+            hyper-parameters $\mu_0 \in \R, \lambda_0 > 0, \alpha_0 > 0, \beta_0
+            > 0$.
+
+            We notate this as:
+
+            \[
+                (M, T) \sim \text{Normal Gamma}(\mu_0, \lambda_0, \alpha_0,
+                \beta_0)
+            \]
+
+            We have that:
+
+            \[
+                \E(M | \tau) = \mu_0
+            \]
+            \[
+                \E(M) = \mu_0 \text{ if } \alpha_0 > \frac{1}{2}
+            \]
+            \[
+                \E(T) = \frac{\alpha_0}{\beta_0}
+            \]
+            \[
+                \E\left(\frac{1}{T}\right) = \frac{\beta_0}{\alpha_0 - 1}
+                \text{ if } \alpha_0 > 1
+            \]
+            \[
+                \var(M | \tau) = \frac{1}{\lambda_0 \tau}
+            \]
+            \[
+                \var(M) = \frac{\beta_0}{\lambda_0(\alpha_0 - 1)} \text{ if }
+                \alpha_0 > 0
+            \]
+            \[
+                \var(T) = \frac{\alpha_0}{\beta_0}
+            \]
+            \[
+                \var\left(\frac{1}{T}\right) = \frac{\beta_0^2}{(\alpha_0 - 1)^2
+                (\alpha_0 - 2)} \text{ if } \alpha_0 > 2
+            \]
+
+            The conditions placed on some of these values imply certain
+            properties by definition:
+
+            \[
+                \alpha_0 > 1 \iff \E(T)^2 > \var(T), \quad
+                \alpha_0 > 2 \iff \E(T)^2 > 2\var(T), \quad
+                \alpha_0 > \frac{1}{2} \iff \E(T)^2 > \frac{1}{2}\var(T)
+            \]
+
+        \subsection{Posterior Distribution and Conjugacy}
+            Applying Bayes's theorem, we find:
+
+            \begin{align*}
+                f(\mu, \tau | x_1, ..., x_n) & \propind{\mu, \tau} f(\mu, \tau)
+                    \cdot \prod_{i=1}^n f(x_i | \mu, \tau) \\
+                & \propind{\mu, \tau} \tau^{\alpha_0 - 1/2} \exp\left(-\tau
+                    \left(\beta_0 + \frac{\lambda_0}{2}(\mu - \mu_0)^2\right)
+                    \right) \cdot \tau^{n/2} \exp\left(-\frac{1}{2} \tau
+                    \sum_{i=1}^n (x_i - \mu)^2\right) \\
+                & \propind{\mu, \tau} \tau^{\alpha_0 + n/2 - 1/2} \cdot
+                    \exp\left(-\tau\left(\beta_0 + \frac{1}{2}\left(\lambda_0
+                    (\mu - \mu_0)^2 + \sum_{i=1}^n (x_i - \mu)^2
+                    \right)\right)\right)
+            \end{align*}
+
+            In section 5.6, we showed that $\sum\limits_{i=1}^n (x_i - \mu)^2 =
+            s_n^2 + n(\overline x_n - \mu)^2$.
+
+            Substituting this result then using Lemma 2.2.3(c), we have the
+            following:
+
+            \begin{align*}
+                & \beta_0 + \frac{1}{2}\left(\lambda_0(\mu - \mu_0)^2
+                    + \sum_{i=1}^n (x_i - \mu)^2 \right) \\
+                & = \beta_0 + \frac{1}{2}\left(s_n^2 + (\lambda_0 + n)\left(\mu
+                    - \frac{\lambda_0\mu_0 + n\overline x_n}{\lambda_0 + n}
+                    \right)^2 + \left(\frac{1}{\lambda_0} + \frac{1}{n}
+                    \right)^{-1}(\overline x_n - \mu_0)^2\right)
+            \end{align*}
 
     \input{./problems.tex}
 
